@@ -16,10 +16,16 @@
 一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，callback(el,targetEl )。
 
 #### 方法：
-
 ```
-bind(domId)  // 绑定dom元素
+bind(domId)     // 绑定dom元素
+unbind(domId)   // 解除绑定
 update(config)  // 更新配置
+```
+
+
+#### 属性:
+```
+isbind_containers   //查看已绑定的dom
 ```
 
 
