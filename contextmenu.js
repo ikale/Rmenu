@@ -1,4 +1,4 @@
-export default class Contextmenu {
+class Contextmenu {
     constructor(dom_config) {
       if (!this.isObject(dom_config)) {
         throw new Error("Rmenu创建失败-->dom配置文件错误");
