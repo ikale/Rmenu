@@ -1,6 +1,6 @@
 # Rmenu
 ## contextmenu.js 实现右键菜单
-配置：
+#### 配置：
 ```
 {
   x:{
@@ -13,8 +13,14 @@
   }
 }
 ```
-
 一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，callback(el,targetEl )。
+
+#### 方法：
+
+```
+bind(domId)  // 绑定dom元素
+update(config)  // 更新配置
+```
 
 
 ## frameContainer.js  实现拖拽调整布局大小
