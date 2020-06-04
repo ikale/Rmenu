@@ -479,7 +479,7 @@ class BaseContainer {
  * Event 添加行: onAddRow = function(e){}
  * Event 添加列: onAddColumn = function(e){}
  */
-export class FrameContainer extends BaseContainer {
+class FrameContainer extends BaseContainer {
   constructor(row_classname, col_classname, content_classname) {
     super(row_classname, col_classname, content_classname);
   }
