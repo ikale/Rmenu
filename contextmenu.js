@@ -27,7 +27,7 @@ class Contextmenu {
     }
     this._inited = false;
     this._config = dom_config;
-    this.__init()
+    this.__init();
   }
   __init() {
     if (this._inited) {
@@ -215,5 +215,19 @@ class Contextmenu {
     container.bid = "bid_" + this._bid;
     this.isbind_containers[container.bid] = container;
     this._bid++;
+  }
+
+  unbind(ds) {
+    // 解除绑定
+    let container = this._get_container_domnode(ds);
+    if (container.rmenu) {
+      container.rmenu = null;
+      container.oncontextmenu = function (e) {
+        e.preventDefault;
+      };
+      container.onclick = function (e) {
+        return false;
+      };
+    }
   }
 }
