@@ -460,7 +460,7 @@ class BaseContainer {
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
  */
-default class FrameContainer extends BaseContainer {
+class FrameContainer extends BaseContainer {
   constructor(row_classname, col_classname, content_classname) {
     super(row_classname, col_classname, content_classname);
   }
@@ -672,7 +672,7 @@ default class FrameContainer extends BaseContainer {
     return [sameMode, content_el];
   }
 
-  insertTop(dom) {
+  insertWindowTop(dom) {
     var arr;
     if (!this.isSetInitMode) {
       dom = this.setInitMode("row");
@@ -690,7 +690,7 @@ default class FrameContainer extends BaseContainer {
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
-  insertBottom(dom) {
+  insertWindowBottom(dom) {
     var arr;
     if (!this.isSetInitMode) {
       dom = this.setInitMode("row");
@@ -704,7 +704,7 @@ default class FrameContainer extends BaseContainer {
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
-  insertLeft(dom) {
+  insertWindowLeft(dom) {
     var arr;
     if (!this.isSetInitMode) {
       dom = this.setInitMode("col");
@@ -722,7 +722,7 @@ default class FrameContainer extends BaseContainer {
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
-  insertRight(dom) {
+  insertWindowRight(dom) {
     var arr;
     if (!this.isSetInitMode) {
       dom = this.setInitMode("col");
