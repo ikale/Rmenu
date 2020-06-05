@@ -1,5 +1,5 @@
 # Rmenu
-## contextmenu.js 实现右键菜单 <class FrameContainer>
+## contextmenu.js 实现右键菜单 
 #### 配置：
 ```
 {
@@ -17,7 +17,6 @@
 
 #### 方法：
 ```
-initial(id, mode, putNode,styleOption)          // 初始化,（注：页面没有 "结构"dom时才需要初始化，参考下方结构介绍）
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
 update(config)                                  // 更新配置
@@ -27,11 +26,10 @@ update(config)                                  // 更新配置
 #### 属性:
 ```
 isbind_containers   //查看已绑定的dom
-inited   // 是否已经初始化
 ```
 
 
-## frameContainer.js  实现拖拽调整布局大小
+## frameContainer.js  实现拖拽调整布局大小 <class FrameContainer>
 
 #### 结构
 ```
@@ -64,8 +62,13 @@ style_opts = {
 
 #### 方法
 ```
+initial(id, mode, putNode,styleOption)          // 初始化,（注：页面没有 "结构"dom时才需要初始化，参考上方结构介绍）
 addRow(targetDom,addDom)
 addColumn(targetDom,addDom)
+```
+#### 属性
+```
+inited   // 是否已经初始化
 ```
 
 ##### 事件
