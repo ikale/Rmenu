@@ -25,12 +25,6 @@ function getXY(obj) {
       Math.max(D.scrollLeft, document.body.scrollLeft) -
       D.clientLeft;
     y = box.top + Math.max(D.scrollTop, document.body.scrollTop) - D.clientTop;
-  } else {
-    for (
-      ;
-      obj != document.body;
-      x += obj.offsetLeft, y += obj.offsetTop, obj = obj.offsetParent
-    ) {}
   }
   return {
     x,
@@ -51,7 +45,7 @@ function genControler(steup_el, dirction, size, line_size, line_color) {
 
   //   创建控制柄
   let ctrl_el = document.createElement("div");
-  ctrl_el.ondragstart = function () {
+  ctrl_el.ondragstart = function() {
     return false;
   };
   ctrl_el.className = "draggable";
@@ -64,7 +58,7 @@ function genControler(steup_el, dirction, size, line_size, line_color) {
   line.style.margin = "0 auto";
   line.style.position = "relative";
   //   line.style.Zindex = 90 ;
-  line.ondragstart = function () {
+  line.ondragstart = function() {
     return false;
   };
 
@@ -291,23 +285,11 @@ class BaseContainer {
    */
   _set_style(styleOption) {
     var style = styleOption ? styleOption : {};
-
-    this.min_size = style.hasOwnProperty("min_size") ? style.min_size : 20;
-
-    this.border = style.hasOwnProperty("border")
-      ? style.border
-      : "1px solid #000";
-
-    this.contrl_size = style.hasOwnProperty("contrl_size")
-      ? style.contrl_size
-      : 14;
-    this.splitline_size = style.hasOwnProperty("splitline_size")
-      ? style.splitline_size
-      : 1;
-
-    this.splitline_color = style.hasOwnProperty("splitline_color")
-      ? style.splitline_color
-      : "#000";
+    this.min_size = style.min_size || 20;
+    this.border = style.border || "1px solid #000";
+    this.contrl_size = style.contrl_size || 14;
+    this.splitline_size = style.splitline_size || 1;
+    this.splitline_color = style.splitline_color || "#000";
 
     dragEvent.minSize = this.min_size;
     document.getElementById(this.ID).style.border = this.border;
@@ -323,14 +305,14 @@ class BaseContainer {
 
   onDraging(fn) {
     //   拖动事件
-    dragEvent.on("ondraging", id, fn);
+    dragEvent.on("ondraging", this.ID, fn);
   }
 
   set_dom(style) {
     let dom = document.getElementById(this.ID);
     dom.style.boxSizing = "border-box";
 
-    dom.ondragstart = function () {
+    dom.ondragstart = function() {
       return false;
     };
     this._initialMode(dom);
@@ -386,7 +368,6 @@ class BaseContainer {
       el.style.height = 100 / chirld_n + "%";
       el.style.display = "flex";
       // 处理 r-content
-      let n = el.children.length;
       for (const cel of el.children) {
         this._setContent(cel, "col");
       }
@@ -398,7 +379,6 @@ class BaseContainer {
       el.style.height = 100 / chirld_n + "%";
       el.style.display = "block";
       // 处理 r-content
-      let n = el.children.length;
       for (let cel of el.children) {
         this._setContent(cel, "row");
       }
