@@ -12,6 +12,7 @@ class Contextmenu {
     let dom = document.createElement("div");
     dom.id = this.id;
     dom.className = "KR-meun";
+    dom.style.position = "absolute";
     document.body.appendChild(dom);
     this.dom = document.getElementById(this.id);
 
@@ -41,22 +42,29 @@ class Contextmenu {
   _creat_dom(val, ismain = false) {
     let dom = document.createElement("ul");
     // 判断是否为 主层
-    ismain ? (dom.className = "KR-pane") : (dom.className = "KR-pane subdom");
+    ismain
+      ? (dom.className = "KR-pane")
+      : ((dom.className = "KR-pane subdom"),
+        (dom.style.position = "absolute"),
+        (dom.style.top = 0));
     for (let key in val) {
       if (this.isObject(val[key])) {
         let d = document.createElement("li");
+        d.style.position = "relative";
+        d.style.cursor = "default";
+        d.style.listStyle = "none";
         this.has_sub_dom(val[key])
           ? (d.has_sub_dom = true)
           : (d.has_sub_dom = false);
         d.innerHTML = d.has_sub_dom
-          ? `<i class="micon-custoum iconfont ${
+          ? `<i style="display:inline-block" class="micon-custoum iconfont ${
               val[key].icon
-            }"></i> <span class="mtitle">${
+            }"></i> <span class="mtitle" style="display:inline-block">${
               val[key].title || key
             }</span> <i class="micon iconfont iconmore"></i>`
-          : `<i class="micon-custoum iconfont ${
+          : `<i style="display:inline-block" class="micon-custoum iconfont ${
               val[key].icon
-            }"></i> <span class="mtitle">${val[key].title || key}</span>`;
+            }"></i> <span style="display:inline-block" class="mtitle">${val[key].title || key}</span>`;
 
         d.dom_info = val[key];
         d.init_sub = false;
