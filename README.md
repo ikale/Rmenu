@@ -23,6 +23,7 @@ class: Contextmenu
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
 update(config)                                  // 更新配置
+dispose()                                       // 销毁
 ```
 
 
@@ -66,7 +67,7 @@ style_opts = {
 
 #### 方法
 ```
-initial(id, mode, putNode,styleOption)          // 初始化,（注：页面没有 "结构"dom时才需要初始化，参考上方结构介绍）
+initial(domId, mode, ?putNode,?styleOption)          // 初始化,（注：页面没有 "结构"dom时才需要初始化，参考上方结构介绍）
 addRow(targetDom,addDom)
 addColumn(targetDom,addDom)
 ```
