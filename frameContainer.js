@@ -458,70 +458,105 @@ class BaseContainer {
  * Event 拖动: onDraging(function(a, b){})
  * Event 添加行: onAddRow = function(e){}
  * Event 添加列: onAddColumn = function(e){}
+ * Event 添加窗口 onAddWindow = function(e){}
  */
-class FrameContainer extends BaseContainer {
+default class FrameContainer extends BaseContainer {
   constructor(row_classname, col_classname, content_classname) {
     super(row_classname, col_classname, content_classname);
   }
 
   /**
    * 初始化
-   * @param id            根节点id
+   * @param root_domId    根节点id
    * @param styleOption   样式选项
-   * @param mode          row行模式|| col列模式
-   * @param putNode       需要载入的节点
    */
-  initial(id, mode, putNode,styleOption) {
-    let root_dom = document.getElementById(id);
+  init(root_domId, styleOption) {
+    this.ID = root_domId;
+    this.set_dom(styleOption);
+    this.inited = true;
 
+    let root_dom = document.getElementById(this.ID);
     if (
       root_dom.getElementsByClassName(this.ClOUMN_CLASS_NAME).length > 0 ||
       root_dom.getElementsByClassName(this.ROW_CLASS_NAME).length > 0
     ) {
-      console.warn("Root dom has been child!");
-      this.init(id, styleOption);
-      return false;
+      this.isSetInitMode = true;
+    } else {
+      this.isSetInitMode = false;
     }
+  }
+
+  /**
+   * 设置根模式
+   * @param mode          row行模式|| col列模式
+   * @returns contentEl
+   */
+  setInitMode(mode) {
     if (!mode) {
-      throw new Error("initialize faild, mode has not find");
+      throw new Error("<FrameContainer> setInitMode:faild, mode has not find");
+    }
+
+    if (this.isSetInitMode) {
+      console.warn("<FrameContainer> setInitMode:has been set mode!");
+      return null;
     }
 
     let parent_dom;
+    let contentEl;
+    let root_dom = document.getElementById(this.ID);
     if (mode === "row") {
       parent_dom = this._createRowDom();
-      let contentEl = this._createContentDom(100, "row");
-      putNode instanceof Node ? contentEl.appendChild(putNode) : "";
+      contentEl = this._createContentDom(100, "row");
+      const putNodes = root_dom.childNodes;
+      while (putNodes.length > 0) {
+        contentEl.appendChild(putNodes[0]);
+      }
       parent_dom.appendChild(contentEl);
       root_dom.appendChild(parent_dom);
     }
     if (mode === "col") {
       parent_dom = this._createColunmtDom();
-      let contentEl = this._createContentDom(100, "col");
-      putNode instanceof Node ? contentEl.appendChild(putNode) : "";
+      contentEl = this._createContentDom(100, "col");
+      const putNodes = root_dom.childNodes;
+      while (putNodes.length > 0) {
+        contentEl.appendChild(putNodes[0]);
+      }
       parent_dom.appendChild(contentEl);
       root_dom.appendChild(parent_dom);
     }
-    this.init(id, styleOption);
-    return true;
+    this.isSetInitMode = true;
+    return contentEl;
   }
 
   /**
    * 添加行
    * @param dom
-   * @param putNode 需要载入的节点
+   * @param putNode 额外需要载入的节点
    */
   addRow(dom, putNode) {
-    if (!this.inited) {
-      throw new Error("<FrameContainer> : is not init()");
+    if (!this.isSetInitMode) {
+      throw new Error("<FrameContainer> : is not setInitMode");
     }
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-      throw new Error(
-        `<FrameContainer> addRow : dom has not classname of ${this.CONTENT_CLASS_NAME}`
-      );
+      var _is_go = true;
+      while (_is_go) {
+        dom = dom.parentElement;
+        if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+          _is_go = false;
+        }
+        if (dom.id === this.ID) {
+          _is_go = false;
+          throw new Error(
+            `<FrameContainer> addRow : dom has not classname of ${this.CONTENT_CLASS_NAME}`
+          );
+        }
+      }
     }
 
     let parent_dom;
     let content_el;
+
+    var sameMode = false;
 
     // 直接添加 content
     if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
@@ -531,6 +566,7 @@ class FrameContainer extends BaseContainer {
       content_el = this._createContentDom(size, "row");
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
 
+      sameMode = true;
       if (dom.nextElementSibling) {
         // 修改控制器的指向的前后Dom元素
         dom.nextElementSibling.ctrlElement.ctrlBeforeEl = content_el;
@@ -548,6 +584,10 @@ class FrameContainer extends BaseContainer {
     if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
       parent_dom = this._createRowDom();
       content_el = this._createContentDom(100, "row");
+      const putNodes = dom.childNodes;
+      while (putNodes.length > 0) {
+        content_el.appendChild(putNodes[0]);
+      }
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
       parent_dom.appendChild(content_el);
       dom.appendChild(parent_dom);
@@ -557,25 +597,37 @@ class FrameContainer extends BaseContainer {
     typeof this.onAddRow === "function"
       ? this.onAddRow({ _event: "addRow", dom: content_el })
       : null;
+    return [sameMode, content_el];
   }
 
   /**
    * 添加列
    * @param dom
-   * @param putNode 需要载入的节点
+   * @param putNode 额外需要载入的节点
    */
   addColumn(dom, putNode) {
-    if (!this.inited) {
-      throw new Error("<FrameContainer> is not init()");
+    if (!this.isSetInitMode) {
+      throw new Error("<FrameContainer> : is not setInitMode");
     }
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-      throw new Error(
-        `<FrameContainer> addColumn : dom has not classname of ${this.CONTENT_CLASS_NAME}`
-      );
+      var _is_go = true;
+      while (_is_go) {
+        dom = dom.parentElement;
+        if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+          _is_go = false;
+        }
+        if (dom.id === this.ID) {
+          _is_go = false;
+          throw new Error(
+            `<FrameContainer> addRow : dom has not classname of ${this.CONTENT_CLASS_NAME}`
+          );
+        }
+      }
     }
-
     let parent_dom;
     let content_el;
+
+    var sameMode = false;
 
     // 直接添加 content
     if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
@@ -585,6 +637,7 @@ class FrameContainer extends BaseContainer {
       content_el = this._createContentDom(size, "col");
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
 
+      sameMode = true;
       if (dom.nextElementSibling) {
         // 修改控制器的指向的前后Dom元素
         dom.nextElementSibling.ctrlElement.ctrlBeforeEl = content_el;
@@ -599,8 +652,12 @@ class FrameContainer extends BaseContainer {
     }
     // 创建列框架 在添加content
     if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
-      parent_dom = this._createRowDom();
+      parent_dom = this._createColunmtDom();
       content_el = this._createContentDom(100, "col");
+      const putNodes = dom.childNodes;
+      while (putNodes.length > 0) {
+        content_el.appendChild(putNodes[0]);
+      }
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
 
       parent_dom.appendChild(content_el);
@@ -610,6 +667,73 @@ class FrameContainer extends BaseContainer {
     // 设置回调事件
     typeof this.onAddColumn === "function"
       ? this.onAddColumn({ _event: "addColumn", dom: content_el })
+      : null;
+
+    return [sameMode, content_el];
+  }
+
+  insertTop(dom) {
+    var arr;
+    if (!this.isSetInitMode) {
+      dom = this.setInitMode("row");
+      dom = this.addRow(dom)[1];
+    } else {
+      arr = this.addRow(dom);
+      !arr[0] ? (dom = this.addRow(arr[1])[1]) : (dom = arr[1]);
+    }
+    var pel = dom.previousElementSibling;
+    while (pel.children.length > 0) {
+      dom.appendChild(pel.children[0]);
+    }
+    // 设置回调事件
+    typeof this.onAddWindow === "function"
+      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      : null;
+  }
+  insertBottom(dom) {
+    var arr;
+    if (!this.isSetInitMode) {
+      dom = this.setInitMode("row");
+      dom = this.addRow(dom)[1];
+    } else {
+      arr = this.addRow(dom);
+      !arr[0] ? (dom = this.addRow(arr[1])[1]) : (dom = arr[1]);
+    }
+    // 设置回调事件
+    typeof this.onAddWindow === "function"
+      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      : null;
+  }
+  insertLeft(dom) {
+    var arr;
+    if (!this.isSetInitMode) {
+      dom = this.setInitMode("col");
+      dom = this.addColumn(dom)[1];
+    } else {
+      arr = this.addColumn(dom);
+      !arr[0] ? (dom = this.addColumn(arr[1])[1]) : (dom = arr[1]);
+    }
+    var pel = dom.previousElementSibling;
+    while (pel.children.length > 0) {
+      dom.appendChild(pel.children[0]);
+    }
+    // 设置回调事件
+    typeof this.onAddWindow === "function"
+      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      : null;
+  }
+  insertRight(dom) {
+    var arr;
+    if (!this.isSetInitMode) {
+      dom = this.setInitMode("col");
+      dom = this.addColumn(dom)[1];
+    } else {
+      arr = this.addColumn(dom);
+      !arr[0] ? (dom = this.addColumn(arr[1])[1]) : (dom = arr[1]);
+    }
+    // 设置回调事件
+    typeof this.onAddWindow === "function"
+      ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
 
