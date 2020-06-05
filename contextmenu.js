@@ -1,33 +1,32 @@
 class Contextmenu {
   constructor(dom_config) {
-    if(dom_config){
-      this.initial(dom_config)
-    }
-  }
-  initial(dom_config){
-    if (!this.isObject(dom_config)) {
-      throw new Error("Rmenu创建失败-->dom配置文件错误");
-    }
     this._stopRun = false;
     this._inited = false;
     this.id = "Rmeun_" + Math.random() * 100000;
-    this._bid = 1;
 
-    this._config = dom_config;
+    this._bid = 1;
+    this.x = 0;
+    this.y = 0;
+    this.display = false;    
+    this.isbind_containers = {};   
+
+    this._config = null;
     let dom = document.createElement("div");
     dom.id = this.id;
     dom.className = "KR-meun";
     dom.style.position = "absolute";
     document.body.appendChild(dom);
     this.dom = document.getElementById(this.id);
-
-    this.x = 0;
-    this.y = 0;
-    this.display = false;
     this.hide()
-    this.isbind_containers = {};
+
+    if(dom_config){
+      this.update(dom_config)
+    }
   }
   update(dom_config) {
+    if (!this.isObject(dom_config)) {
+      throw new Error("Rmenu创建失败-->dom配置文件错误");
+    }
     for (const el of this.dom.childNodes) {
       this.dom.removeChild(el);
     }
