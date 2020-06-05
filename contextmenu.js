@@ -203,7 +203,7 @@ class Contextmenu {
       e.preventDefault ? (e.returnValue = false) : "";
       menu.activeBid = e.path[0].bid;
       menu.activeDom = menu.isbind_containers[e.path[0].bid];
-      menu.show(e.pageX, e.pageY);
+      menu.show(e.pageX+2, e.pageY+2);
     };
 
     container.onclick = function (e) {
