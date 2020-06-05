@@ -1,5 +1,8 @@
 # Rmenu
 ## contextmenu.js 实现右键菜单 
+<class Contextmenu>
+
+
 #### 配置：
 ```
 {
@@ -29,8 +32,9 @@ isbind_containers   //查看已绑定的dom
 ```
 
 
-## frameContainer.js  实现拖拽调整布局大小 <class FrameContainer>
-
+## frameContainer.js  实现拖拽调整布局大小 
+<class FrameContainer>
+  
 #### 结构
 ```
 行模式
