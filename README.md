@@ -70,6 +70,11 @@ style_opts = {
 initial(domId, mode, ?putNode,?styleOption)          // 初始化,（注：页面没有 "结构"dom时才需要初始化，参考上方结构介绍）
 addRow(targetDom,addDom)
 addColumn(targetDom,addDom)
+
+insertWindowTop(dom) 
+insertWindowBottom(dom) 
+insertWindowLeft(dom) 
+insertWindowRight(dom) 
 ```
 #### 属性
 ```
@@ -81,5 +86,6 @@ inited   // 是否已经初始化
  * Event 拖动: onDraging(function(a, b){})
  * Event 添加行: onAddRow = function(e){}
  * Event 添加列: onAddColumn = function(e){}
+ * Event 添加窗口 onAddWindow = function(e){}
  ```
  
