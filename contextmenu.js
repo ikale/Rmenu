@@ -122,11 +122,11 @@ class Contextmenu {
       return;
     }
     this._stopRun = true;
-    let parent = this.activeDom;
+    let targetEl = this.activeDom;
 
     let func = function () {
       if (typeof target_fn === "function") {
-        return target_fn(el, parent);
+        return target_fn(targetEl,el);
       }
 
       if (target_fn === undefined || target_fn === "") {
