@@ -5,16 +5,16 @@ class: Contextmenu
 
 #### 配置：
 ```
-{
-  x:{
-    titile:" 一级菜单 1",
-    target: callback,
-    xx:{
-        titile:" 二级菜单",
-        target: callback,        
-    }
-  }
-}
+config = {
+          x:{
+            titile:" 一级菜单 1",
+            target: callback,
+            xx:{
+                titile:" 二级菜单",
+                target: callback,        
+            }
+          }
+        }
 ```
 一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，callback(el,targetEl )。
 
