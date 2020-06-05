@@ -122,11 +122,11 @@ class Contextmenu {
       return;
     }
     this._stopRun = true;
-    let targetEl = this.activeDom;
-
+    let targetEl = this.targetEl;
+    let activeDom = this.activeDom
     let func = function () {
       if (typeof target_fn === "function") {
-        return target_fn(targetEl,el);
+        return target_fn(targetEl,activeDom,el);
       }
 
       if (target_fn === undefined || target_fn === "") {
@@ -204,9 +204,15 @@ class Contextmenu {
     container.oncontextmenu = function (e) {
       // 阻止默认事件
       // console.log(e.path[0].bid);
-      e.preventDefault ? (e.returnValue = false) : "";
-      menu.activeBid = e.path[0].bid;
-      menu.activeDom = menu.isbind_containers[e.path[0].bid];
+      e.preventDefault ? (e.returnValue = false) : "";             
+      for (const el of e.path) {
+        if(el.bid){
+          menu.activeBid = el.bid;  
+          menu.activeDom = menu.isbind_containers[el.bid];
+          break
+        }
+      }
+      menu.targetEl = e.path[0]
       menu.show(e.pageX+2, e.pageY+2);
     };
 
