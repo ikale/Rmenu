@@ -19,7 +19,7 @@ class Contextmenu {
     this.x = 0;
     this.y = 0;
     this.display = false;
-
+    this.hide()
     this.isbind_containers = {};
   }
   update(dom_config) {
