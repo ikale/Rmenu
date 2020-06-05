@@ -95,7 +95,7 @@ insertWindowRight(dom)
 inited   // 是否已经初始化
 ```
 
-##### 事件
+#### 事件
 ```
  * Event 拖动: onDraging(function(a, b){})
  * Event 添加窗口 onAddWindow = function(e){}
