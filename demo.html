@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="http://at.alicdn.com/t/font_1848866_fgao2nyf01n.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #app {
+        width: 60%;
+        margin: 0 auto;
+        height: 800px;
+      }
+      .demo{
+        width: 100%; 
+        height: 100%; 
+        text-align: center;
+        font-size: 32px;
+      }
+
+      .KR-meun {
+        width: 220px;
+        font-size: 13px;
+        z-index: 9999;
+      }
+      .KR-pane {
+        background: #eee;
+      }
+      .KR-meun ul {
+        padding: 0;
+        margin: 0;
+        min-width: 180px;
+        border-radius: 4px;
+      }
+      .KR-meun ul li {
+        height: 32px;
+        line-height: 32px;
+      }
+      .KR-meun ul li .micon-custoum {
+        font-size: 20px;
+        min-width: 30px;
+        text-align: center;
+      }
+
+      .KR-meun ul li .mtitle {
+        width: 70%;
+      }
+      .KR-meun ul li .micon {
+        font-size: 10px;
+      }
+
+      .KR-meun .choose {
+        background: rgb(245, 245, 245);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="demo">Hello Rmenu!</div>
+    </div>
+  </body>
+  <script src="contextmenu.js"></script>
+  <script src="frameContainer.js"></script>
+  <script>
+    const menu = new Contextmenu();
+    menu.bind("app");
+
+    const frameContainer = new FrameContainer();
+    frameContainer.init("app");
+
+    config = {
+      insertWin: {
+        title: "插入窗口",
+        up: {
+          title: "在上方",
+          target: (targetEl) => {
+            frameContainer.insertWindowTop(targetEl);
+            return true;
+          },
+        },
+        down: {
+          title: "在下方",
+          target: (targetEl) => {
+            frameContainer.insertWindowBottom(targetEl);
+            return true;
+          },
+        },
+        left: {
+          title: "在左侧",
+          target: (targetEl) => {
+            frameContainer.insertWindowLeft(targetEl);
+            return true;
+          },
+        },
+        right: {
+          title: "在右侧",
+          target: (targetEl) => {
+            frameContainer.insertWindowRight(targetEl);
+            return true;
+          },
+        },
+      },
+      changeColor: {
+        title: "更换颜色",
+        xx1: {
+          title: "红色",
+          target: function (targetEl, el) {
+            targetEl.style.background = "#eeb3d3";
+            return true;
+          },
+        },
+        x234: {
+          title: "绿色",
+          target: function (targetEl, el) {
+            targetEl.style.background = "#aebda4";
+            return true;
+          },
+        },
+        fasd: {
+          title: "蓝色",
+          target: function (targetEl, el) {
+            targetEl.style.background = "#96a6e9";
+            return true;
+          },
+        },
+      },
+      deoms: {
+        title: "演示层级",
+        x: {
+          title: "二级",
+          target: function (targetEl, el) {
+            return true;
+          },
+          xx: {
+          title: "三级",
+          target: function (targetEl, el) {
+            return true;
+          },
+          xxx: {
+          title: "四级",
+          target: function (targetEl, el) {
+            return true;
+          },
+        },
+        },
+        },
+      },
+    };
+    
+    menu.update(config)
+
+  </script>
+</html>
