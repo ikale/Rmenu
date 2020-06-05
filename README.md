@@ -1,7 +1,11 @@
 # Rmenu
 ## contextmenu.js 实现右键菜单 
-class: Contextmenu
 
+#### 创建实例：
+```
+new Contextmenu(?config)
+// config  在创建实例时可以不传入，通过update(config)方法设置也可以
+```
 
 #### 配置：
 ```
@@ -19,6 +23,7 @@ config = {
 一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，`callback(targetEl,el )`。
 
 #### 方法：
+
 ```
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
@@ -34,8 +39,17 @@ isbind_containers   //查看已绑定的dom
 
 
 ## frameContainer.js  实现拖拽调整布局大小 
-class: FrameContainer
-  
+
+#### 创建实例：
+```
+new FrameContainer(?row_classname, ?col_classname, ?content_classname)
+
+样式名称：
+// row_classname              可选 | 默认 "r-row"                 
+// col_classname              可选 | 默认 "r-col"                           
+// content_classname          可选 | 默认 "r-content"  
+ ```
+ 
 #### 结构
 ```
 行模式
