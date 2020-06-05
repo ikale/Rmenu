@@ -235,12 +235,20 @@ class Contextmenu {
     let container = this._get_container_domnode(ds);
     if (container.rmenu) {
       container.rmenu = null;
+      delete this.isbind_containers[container.bid]
       container.oncontextmenu = function (e) {
         e.preventDefault;
       };
       container.onclick = function () {
         return false;
       };
+    }
+  }
+  dispose(){
+    for (const key in this.isbind_containers) {
+          const bnode = this.isbind_containers[key]
+          this.unbind(bnode)
+          delete this.isbind_containers[key]
     }
   }
 }
