@@ -233,7 +233,7 @@ class Contextmenu {
       container.oncontextmenu = function (e) {
         e.preventDefault;
       };
-      container.onclick = function (e) {
+      container.onclick = function () {
         return false;
       };
     }
