@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="rgrid" style="width: 1000px; height: 600px; background: #eee;">
+      <div class="r-col">
+        <div class="r-content">
+          <div class="r-col">
+            <div class="r-content">
+              <div class="r-row">
+                <div class="r-content">
+                  <div
+                    style="
+                      background: rgb(226, 124, 124);
+                      width: 100%;
+                      height: 100%;
+                    "
+                  >
+                    niasdfnasdf
+                  </div>
+                </div>
+                <div class="r-content"></div>
+              </div>
+            </div>
+            <div class="r-content">
+              <div class="r-row">
+                <div class="r-content"></div>
+                <div class="r-content"></div>
+              </div>
+            </div>
+            <div class="r-content"></div>
+          </div>
+        </div>
+        <div class="r-content"></div>
+      </div>
+    </div>
+  </body>
+  <script src="frameContainer.js"></script>
+   <script>
+    let id = "rgrid";
+
+    styleopts = {
+      contrl_size: 14,
+      splitline_size: 1,
+      splitline_color: "#aaa",
+      border: "2px solid #aaa",
+      min_size: 50,
+    };
+    var r = new FrameContainer();
+    r.initial(id,"row",null,styleopts);
+
+    // 测试事件
+    r.onDraging(function (a, b) {
+      console.log(a, b);
+    });
+    r.onAddRow = function (e) {
+      console.log(e);
+    };
+    r.onAddColumn = function (e) {
+      console.log(e);
+    };
+
+    x = 1;
+    function a() {
+      let p = document.createElement("p");
+      p.innerText = `${x}a`;
+      x++;
+      return p;
+    }
+
+    // r.addRow(document.getElementById("hha"), a());
+    // r.addRow(document.getElementById("hha"), a());
+    // r.addRow(document.getElementById("hha"), a());
+    // r.addRow(document.getElementById("hha"), a());
+  </script>
+</html>
