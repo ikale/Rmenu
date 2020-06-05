@@ -16,7 +16,7 @@ config = {
           }
         }
 ```
-一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，callback(el,targetEl )。
+一个花括号为一个层级，如果不定义title，默认以键值作为名称。 target 点击后执行的任务，它是一个回调函数，`callback(targetEl,el )`。
 
 #### 方法：
 ```
