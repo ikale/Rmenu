@@ -471,7 +471,7 @@ class FrameContainer extends BaseContainer {
    * @param mode          row行模式|| col列模式
    * @param putNode       需要载入的节点
    */
-  initial(id, styleOption, mode, putNode) {
+  initial(id, mode, putNode,styleOption) {
     let root_dom = document.getElementById(id);
 
     if (
