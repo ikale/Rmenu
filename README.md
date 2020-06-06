@@ -1,8 +1,7 @@
 # Rmenu
-## contextmenu.js 实现右键菜单 
 #### deom:  https://ikale.github.io/Rmenu/demo.html
 
-
+## contextmenu.js 实现右键菜单 
 #### 创建实例：
 ```
 new Contextmenu(?config)
