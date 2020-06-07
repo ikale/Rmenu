@@ -22,18 +22,6 @@ function getXY(obj) {
 }
 
 /**
- * 从父元素生成控制器
- * @param setupEl
- * @param dirction  默认为横向 {1 'row'| 0 'col'}
- * @param opts      配置项 className  ctrlElsize lineColor lineSize creatLine
- */
-function genControlerByParentEl(parentEl, dirction, opts) {
-  for (const setupEl of parentEl.children) {
-    genControlerByEl(setupEl, dirction, opts);
-  }
-}
-
-/**
  * 生成控制器
  * @param setupEl
  * @param dirction  默认为横向 {1 'row'| 0 'col'}
@@ -61,7 +49,7 @@ function genControlerByEl(setupEl, dirction, opts) {
   ctrlEl.className = draggableClassName;
   ctrlEl.style.position = "absolute";
   ctrlEl.style.zIndex = 999;
-  ctrlEl.ondragstart = function () {
+  ctrlEl.ondragstart = function() {
     // 屏蔽默认拖拽
     return false;
   };
@@ -95,7 +83,7 @@ function genControlerByEl(setupEl, dirction, opts) {
         (line.style.width = "100%"),
         (line.style.top = ctrlElsize / 2 + "px"))
       : "";
-    line.ondragstart = function () {
+    line.ondragstart = function() {
       // 屏蔽默认拖拽
       return false;
     };
@@ -124,11 +112,11 @@ function destroyControler(dom, className) {
  * @return Bollen;
  */
 function hasClassName(className, str) {
-  if(className){
+  if (className) {
     let arr = className.trim().split(/\s+/);
     return arr.indexOf(str) > -1 ? true : false;
   }
-  return false
+  return false;
 }
 
 /**
@@ -140,13 +128,13 @@ function hasClassName(className, str) {
  */
 function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
   draggableClassName = draggableClassName || "draggable";
-  isPercent===false?(isPercent=false):(isPercent=true);
-  
-  minSize = minSize||50;
+  isPercent === false ? (isPercent = false) : (isPercent = true);
+
+  minSize = minSize || 50;
   var drag = null;
   var type = "w-resize";
   var totalHeigh;
-  var totalWidth;  
+  var totalWidth;
   var elX;
   var elY;
   var elTop;
@@ -213,13 +201,13 @@ function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
           const aEl = bEl.previousElementSibling;
           // 上下移动
           if (type === "s-resize") {
-            var diffy = elY - event.clientY + elTop;    
-            var a = event.clientY-getXY(aEl).y
-            var b = getXY(bEl).y+ bEl.offsetHeight - event.clientY
+            var diffy = elY - event.clientY + elTop;
+            var ay = event.clientY - getXY(aEl).y;
+            var by = getXY(bEl).y + bEl.offsetHeight - event.clientY;
             // console.log("总高度",totalHeigh)
-            if(a>minSize && b>minSize){
-                bEl.style.height = totalHeigh - elY + diffy + "px";
-                aEl.style.height = elY - diffy + "px";
+            if (ay > minSize && by > minSize) {
+              bEl.style.height = totalHeigh - elY + diffy + "px";
+              aEl.style.height = elY - diffy + "px";
             }
             // 触发拖拽回调
             typeof callback === "function"
@@ -243,10 +231,10 @@ function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
           if (type === "w-resize") {
             var diffx = elX - event.clientX + elLeft;
             // console.log("开始移动", elX);
-            var a = event.clientX-getXY(aEl).x
-            var b = getXY(bEl).x+ bEl.offsetWidth - event.clientX
+            var ax = event.clientX - getXY(aEl).x;
+            var bx = getXY(bEl).x + bEl.offsetWidth - event.clientX;
 
-            if (a>minSize && b>minSize) {
+            if (ax > minSize && bx > minSize) {
               bEl.style.width = totalWidth - elX + diffx + "px";
               aEl.style.width = elX - diffx + "px";
             }
@@ -363,7 +351,7 @@ class BaseContainer {
 
     // 2.设置样式
     rootDom.style.boxSizing = "border-box";
-    rootDom.ondragstart = function () {
+    rootDom.ondragstart = function() {
       return false;
     };
     rootDom.style.border = this.rootDomBorder;
@@ -392,24 +380,21 @@ class BaseContainer {
     }
   }
 
-
-  getOptions(){
-    return{      
-        isDraggable: this.isDraggable,                        //  是否开启拖拽
-        minSize: this.minSize,                                //  拖动最小间隙
-        isPercent: this.isPercent,                            //  宽高为百分比
-        ctrlElsize: this.ctrlElsize,                          //  控制器大小
-        lineColor: this.lineColor,                            //  分割线颜色
-        lineSize: this.lineSize,                              //  分割线大小
-        creatLine: this.creatLine,                            //  是否创建分割线
-        draggableClassName: this.draggableClassName,          //  拖拽样式名称
-        rootDomBorder: this.rootDomBorder,                    //  根节点边框
-        rowClassname: this.rowClassname,                      //  行样式名称
-        columnClassname: this.columnClassname,                //  列样式名称
-        contentClassname: this.contentClassname,              //  单元格样式名称
-      
-    }
-
+  getOptions() {
+    return {
+      isDraggable: this.isDraggable, //  是否开启拖拽
+      minSize: this.minSize, //  拖动最小间隙
+      isPercent: this.isPercent, //  宽高为百分比
+      ctrlElsize: this.ctrlElsize, //  控制器大小
+      lineColor: this.lineColor, //  分割线颜色
+      lineSize: this.lineSize, //  分割线大小
+      creatLine: this.creatLine, //  是否创建分割线
+      draggableClassName: this.draggableClassName, //  拖拽样式名称
+      rootDomBorder: this.rootDomBorder, //  根节点边框
+      rowClassname: this.rowClassname, //  行样式名称
+      columnClassname: this.columnClassname, //  列样式名称
+      contentClassname: this.contentClassname, //  单元格样式名称
+    };
   }
 
   /**
@@ -481,7 +466,7 @@ class BaseContainer {
     for (const el of rows) {
       let chirld_n = el.parentElement.children.length;
       el.style.height = 100 / chirld_n + "%";
-      el.style.display = "block";      
+      el.style.display = "block";
       // 处理 r-content
       for (let cel of el.children) {
         this._setContent(cel, "row");
@@ -496,7 +481,7 @@ class BaseContainer {
       dom.style.width = dom.style.width || "100%";
       dom.style.height = dom.style.height || 100 / n + "%";
       dom.style.boxSizing = "border-box";
-      dom.style.overflow = "hidden";      
+      dom.style.overflow = "hidden";
     }
     if (dirction === "col") {
       dom.style.height = dom.style.height || "100%";
@@ -550,7 +535,7 @@ class BaseContainer {
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
  */
-class FrameContainer extends BaseContainer {
+export default class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -581,7 +566,7 @@ class FrameContainer extends BaseContainer {
    * @param mode          row行模式|| col列模式
    * @returns contentEl
    */
-  setInitMode(mode,dom) {
+  setInitMode(mode, dom) {
     if (!mode) {
       throw new Error("<FrameContainer> setInitMode:faild, mode has not find");
     }
@@ -600,7 +585,6 @@ class FrameContainer extends BaseContainer {
       }
       parent_dom.appendChild(contentEl);
       root_dom.appendChild(parent_dom);
-
     }
     if (mode === "col") {
       parent_dom = this._createColunmtDom();
@@ -630,6 +614,10 @@ class FrameContainer extends BaseContainer {
     // 1.查找目标contentEl
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       var _is_go = true;
+      if (document.getElementById(this.ID) === dom) {
+        dom = this.setInitMode("row", document.getElementById(this.ID));
+        _is_go = false;
+      }
       while (_is_go) {
         dom = dom.parentElement;
         if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
@@ -637,7 +625,7 @@ class FrameContainer extends BaseContainer {
         }
         if (dom.id === this.ID) {
           _is_go = false;
-          dom = this.setInitMode("row",document.getElementById(this.ID))
+          dom = this.setInitMode("row", document.getElementById(this.ID));
         }
       }
     }
@@ -652,7 +640,7 @@ class FrameContainer extends BaseContainer {
     // ### 在列模式时，创建行框架 在添加content
     if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
       console.log("添加行模式框架");
-      dom = this.setInitMode("row",dom)
+      dom = this.setInitMode("row", dom);
     }
 
     // ### 直接添加 content
@@ -670,7 +658,6 @@ class FrameContainer extends BaseContainer {
       newContentEl = content_el;
       thisParentEl = parent_dom;
     }
-
 
     // 3.排序 ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
     switch (insertPosition) {
@@ -733,12 +720,16 @@ class FrameContainer extends BaseContainer {
    * @param insertPosition   插入的位置 默认值 "bottom" ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
    * @param putNode 额外需要载入的节点
    */
-  addColumn(dom,insertPosition,putNode) {
+  addColumn(dom, insertPosition, putNode) {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       var _is_go = true;
+      if (document.getElementById(this.ID) === dom) {
+        dom = this.setInitMode("row", document.getElementById(this.ID));
+        _is_go = false;
+      }
       while (_is_go) {
         dom = dom.parentElement;
         if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
@@ -746,7 +737,7 @@ class FrameContainer extends BaseContainer {
         }
         if (dom.id === this.ID) {
           _is_go = false;
-          dom = this.setInitMode("col",document.getElementById(this.ID))
+          dom = this.setInitMode("col", document.getElementById(this.ID));
         }
       }
     }
@@ -761,7 +752,7 @@ class FrameContainer extends BaseContainer {
     // ### 在行模式下，创建列框架 在添加content
     if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
       console.log("添加列模式框架");
-      dom = this.setInitMode("col",dom)
+      dom = this.setInitMode("col", dom);
     }
 
     // ### 直接添加 content
@@ -779,7 +770,6 @@ class FrameContainer extends BaseContainer {
       newContentEl = content_el;
       thisParentEl = parent_dom;
     }
-
 
     // 3.排序 ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
     switch (insertPosition) {
@@ -852,16 +842,16 @@ class FrameContainer extends BaseContainer {
       : null;
   }
   insertWindowLeft(dom) {
-    dom=this.addColumn(dom, "before")[1];
-    
+    dom = this.addColumn(dom, "before")[1];
+
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
   insertWindowRight(dom) {
-    dom=this.addColumn(dom, "after")[1];
-    
+    dom = this.addColumn(dom, "after")[1];
+
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
@@ -876,7 +866,7 @@ class FrameContainer extends BaseContainer {
       el.style.width = "100%";
       el.style.height = size + "%";
       el.style.boxSizing = "border-box";
-      el.style.overflow = "hidden";      
+      el.style.overflow = "hidden";
     }
     if (dirction === "col") {
       el.style.height = "100%";
@@ -890,7 +880,7 @@ class FrameContainer extends BaseContainer {
     let el = document.createElement("div");
     el.className = this.ROW_CLASS_NAME;
     el.style.height = 100 + "%";
-    el.style.display = "block"    
+    el.style.display = "block";
     return el;
   }
   _createColunmtDom() {
