@@ -88,26 +88,26 @@ defaultOptions = {
 ```
 
 #### 方法
-
-###### init(root_domId,?options) 初始化
-
-###### addRow(dom, ?insertPosition, ?putNode)   添加行
-###### addColumn(dom,?insertPosition,?putNode)   添加列
 ```
+init(root_domId,?options)                         // 初始化
+```
+
+```
+addRow(dom, ?insertPosition, ?putNode)            // 添加行
+addColumn(dom,?insertPosition,?putNode)           // 添加列
 参数：
-dom 
-insertPosition   // 插入的位置 默认值 "bottom"  ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
-putNode  额外需要载入的节点
+- dom 
+- insertPosition   // 插入的位置 默认值 "bottom"  ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
+- putNode  额外需要载入的节点
 
-返回值：
-[newContentEl, thisContentEl]
+返回值：[newContentEl, thisContentEl]
 ```
-
-###### insertWindowTop(dom)   在dom元素的上方插入窗口
-###### insertWindowBottom(dom)  在dom元素的下方插入窗口
-###### insertWindowLeft(dom)                  
-###### insertWindowRight(dom) 
-
+```
+insertWindowTop(dom)                    // 在dom元素的上方插入窗口
+insertWindowBottom(dom)                 // 在dom元素的下方插入窗口
+insertWindowLeft(dom)                  
+insertWindowRight(dom) 
+```
 
 #### 属性
 ```
