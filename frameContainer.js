@@ -392,6 +392,26 @@ class BaseContainer {
     }
   }
 
+
+  getOptions(){
+    return{      
+        isDraggable: this.isDraggable,                        //  是否开启拖拽
+        minSize: this.minSize,                                //  拖动最小间隙
+        isPercent: this.isPercent,                            //  宽高为百分比
+        ctrlElsize: this.ctrlElsize,                          //  控制器大小
+        lineColor: this.lineColor,                            //  分割线颜色
+        lineSize: this.lineSize,                              //  分割线大小
+        creatLine: this.creatLine,                            //  是否创建分割线
+        draggableClassName: this.draggableClassName,          //  拖拽样式名称
+        rootDomBorder: this.rootDomBorder,                    //  根节点边框
+        rowClassname: this.rowClassname,                      //  行样式名称
+        columnClassname: this.columnClassname,                //  列样式名称
+        contentClassname: this.contentClassname,              //  单元格样式名称
+      
+    }
+
+  }
+
   /**
    * 添加控制器
    * @param contentEl
@@ -602,6 +622,7 @@ class FrameContainer extends BaseContainer {
    * @param dom
    * @param insertPosition   插入的位置 默认值 "bottom" ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
    * @param putNode 额外需要载入的节点
+   * @returns [newContentEl, thisContentEl]
    */
   addRow(dom, insertPosition, putNode) {
     insertPosition = insertPosition || "bottom";
