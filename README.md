@@ -91,23 +91,17 @@ defaultOptions = {
 
 ###### init(root_domId,?options) 初始化
 
-
-###### addRow(dom, insertPosition, putNode) 添加行
+###### addRow(dom, ?insertPosition, ?putNode)   添加行
+###### addColumn(dom,?insertPosition,?putNode)   添加列
 ```
-* @param
+参数：
 dom 
+insertPosition   // 插入的位置 默认值 "bottom"  ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
+putNode  额外需要载入的节点
 
-insertPosition   // 插入的位置 默认值 "bottom" 
-// ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
-
-putNode 额外需要载入的节点
-```
-```
-* @returns 
+返回值：
 [newContentEl, thisContentEl]
 ```
-
-##### addColumn(dom,insertPosition,putNode)   添加列
 
 ###### insertWindowTop(dom)   在dom元素的上方插入窗口
 ###### insertWindowBottom(dom)  在dom元素的下方插入窗口
