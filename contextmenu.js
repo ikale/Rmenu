@@ -1,3 +1,26 @@
+/**
+ * 获取dom坐标
+ * @param obj
+ * @return {x,y};
+ */
+function getXY(obj) {
+  var x = 0,
+    y = 0;
+  if (obj.getBoundingClientRect) {
+    var box = obj.getBoundingClientRect();
+    var D = document.documentElement;
+    x =
+      box.left +
+      Math.max(D.scrollLeft, document.body.scrollLeft) -
+      D.clientLeft;
+    y = box.top + Math.max(D.scrollTop, document.body.scrollTop) - D.clientTop;
+  }
+  return {
+    x,
+    y,
+  };
+}
+
 class Contextmenu {
   constructor(nodeConfigs) {
     this._stopRun = false;
@@ -31,10 +54,9 @@ class Contextmenu {
     for (const key in nodeConfigs) {
       this._configs[key] = nodeConfigs[key];
     }
-    this.update(this._configs)
-
+    this.update(this._configs);
   }
-  
+
   update(nodeConfigs) {
     if (!this.isObject(nodeConfigs)) {
       throw new Error("Rmenu创建失败-->dom配置文件错误");
@@ -57,6 +79,7 @@ class Contextmenu {
   }
   _creat_dom(val, ismain = false) {
     let dom = document.createElement("ul");
+    dom.style.zIndex = 9999999999999;
     // 判断是否为 主层
     ismain
       ? (dom.className = "KR-pane")
@@ -65,24 +88,24 @@ class Contextmenu {
         (dom.style.top = 0));
     for (let key in val) {
       if (this.isObject(val[key])) {
+        const menuInfo = val[key];
+        const menuTitle = menuInfo.title;
+        const menuIcon = menuInfo.icon;
+
         let d = document.createElement("li");
         d.style.position = "relative";
         d.style.cursor = "default";
         d.style.listStyle = "none";
-        this.has_sub_dom(val[key])
+        this.has_sub_dom(menuInfo)
           ? (d.has_sub_dom = true)
           : (d.has_sub_dom = false);
         d.innerHTML = d.has_sub_dom
-          ? `<i style="display:inline-block" class="micon-custoum iconfont ${
-              val[key].icon
-            }"></i> <span class="mtitle" style="display:inline-block">${val[key]
-              .title || key}</span> <i class="micon iconfont iconmore"></i>`
-          : `<i style="display:inline-block" class="micon-custoum iconfont ${
-              val[key].icon
-            }"></i> <span style="display:inline-block" class="mtitle">${val[key]
-              .title || key}</span>`;
+          ? `<i style="display:inline-block" class="micon-custoum iconfont ${menuIcon}"></i> <span class="mtitle" style="display:inline-block">${menuTitle ||
+              key}</span> <i class="micon iconfont iconmore"></i>`
+          : `<i style="display:inline-block" class="micon-custoum iconfont ${menuIcon}"></i> <span style="display:inline-block" class="mtitle">${menuTitle ||
+              key}</span>`;
 
-        d.dom_info = val[key];
+        d.dom_info = menuInfo;
         d.init_sub = false;
         d.onmouseover = (e) => {
           let el = e.srcElement.tagName === "LI" ? e.path[0] : e.path[1];
@@ -99,6 +122,31 @@ class Contextmenu {
           if (el.has_sub_dom) {
             el.lastChild.style.display = "block";
             // console.log('悬停，子元素',el.clientWidth)
+          }
+
+          const targetEl = el.lastChild;
+          if (this.ischangeY) {
+            // console.log("更改弹出方式，向上弹出");
+            targetEl.style.top =
+              -targetEl.offsetHeight +
+              targetEl.childNodes[0].offsetHeight +
+              "px";
+          } else {
+            targetEl.style.top = 0;
+          }
+
+          if (this.ischangeX) {
+            // console.log("更改弹出方式，向左弹出");
+            targetEl.style.left = -targetEl.offsetWidth + "px";
+          } else {
+            targetEl.style.left = targetEl.offsetWidth + "px";
+          }
+
+          const wucha =
+            getXY(targetEl.lastChild).y - this.activeDom.clientHeight;
+          if (wucha > 0) {
+            // console.log("调整",wucha)
+            targetEl.style.top = -wucha + "px";
           }
         };
 
@@ -174,6 +222,22 @@ class Contextmenu {
     this.dom.style.display = "block";
     this.dom.style.top = y + "px";
     this.dom.style.left = x + "px";
+
+    this.ischangeX = false;
+    this.ischangeY = false;
+    const targetEl = this.dom.lastChild.lastChild;
+
+    if (getXY(targetEl).y > document.body.clientHeight) {
+      // console.log("1111111111111更改弹出方式，向上弹出");
+      this.ischangeY = true;
+      this.dom.style.top = y - this.dom.lastChild.clientHeight + "px";
+    }
+
+    if (getXY(targetEl).x + targetEl.clientWidth > document.body.clientWidth) {
+      // console.log("1111111111更改弹出方式，向左弹出");
+      this.dom.style.left = x - this.dom.lastChild.clientWidth + "px";
+      this.ischangeX = true;
+    }
   }
   hide() {
     this.display = false;
@@ -225,7 +289,9 @@ class Contextmenu {
         }
       }
       menu.targetEl = e.path[0];
-      menu.show(e.pageX + 2, e.pageY + 2);
+      const targetX = e.pageX + 2;
+      const targetY = e.pageY + 2;
+      menu.show(targetX, targetY);
     };
 
     container.onclick = function(e) {
@@ -236,7 +302,7 @@ class Contextmenu {
           e.clientY < menu.y ||
           e.clientY > menu.y + menu.dom.offsetHeight)
       ) {
-        console.log("菜单关闭");
+        // console.log("菜单关闭");
         menu.hide();
       }
     };
