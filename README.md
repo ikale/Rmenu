@@ -110,14 +110,14 @@ inited   // 是否已经初始化
  回调参数：e: {
                     _event: "draging",
                     aEl: {
-                    dom: aEl,
-                    width: aEl.offsetWidth,
-                    height: aEl.offsetHeight,
+                              dom: aEl,
+                              width: aEl.offsetWidth,
+                              height: aEl.offsetHeight,
                     },
                     bEl: {
-                    dom: bEl,
-                    width: bEl.offsetWidth,
-                    height: bEl.offsetHeight,
+                              dom: bEl,
+                              width: bEl.offsetWidth,
+                              height: bEl.offsetHeight,
                     },
           }
   ```              
@@ -133,12 +133,17 @@ inited   // 是否已经初始化
  
 ###### 添加行: onAddRow = function(e){}
  ```
+ onAddRow = function(e){}
  回调参数： e: { _event: "addRow", dom: newContentEl }
 
  ```
  
  ###### 添加列: onAddColumn = function(e){}
  ```
+ onAddColumn = function(e){}
  回调参数： e: { _event: "addColumn", dom: newContentEl }
 
  ```
+
+
+
