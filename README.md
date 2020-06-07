@@ -102,10 +102,12 @@ insertWindowRight(dom)
 inited   // 是否已经初始化
 ```
 
-#### 事件
-```
- * Event 拖动: onDraging((e)=>{})
- 回调参数：e = {
+#### 事件Event
+
+###### 拖动: onDraging((e)=>{})
+ ```
+ onDraging((e)=>{})
+ 回调参数：e: {
                     _event: "draging",
                     aEl: {
                     dom: aEl,
@@ -118,9 +120,25 @@ inited   // 是否已经初始化
                     height: bEl.offsetHeight,
                     },
           }
-                
- * Event 添加窗口 onAddWindow = function(e){}
- 回调参数：e = { _event: "addWindow", dom: contentEl }
+  ```              
+  
+  
+###### 添加窗口: onAddWindow = function(e){}
+ ```
+ onAddWindow = function(e){}
+ 回调参数：e: { _event: "addWindow", dom: contentEl }
  
  ```
  
+ 
+###### 添加行: onAddRow = function(e){}
+ ```
+ 回调参数： e: { _event: "addRow", dom: newContentEl }
+
+ ```
+ 
+ ###### 添加列: onAddColumn = function(e){}
+ ```
+ 回调参数： e: { _event: "addColumn", dom: newContentEl }
+
+ ```
