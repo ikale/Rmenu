@@ -4,13 +4,13 @@
 ## contextmenu.js 实现右键菜单 
 #### 创建实例：
 ```
-new Contextmenu(?config)
-// config  在创建实例时可以不传入，通过addMenu(config)方法设置也可以
+new Contextmenu(?nodeConfigs)
+// config  在创建实例时可以不传入，通过addMenu(nodeConfigs)方法设置也可以
 ```
 
 #### 配置：
 ```
-config = {
+nodeConfigs = {
           x:{
             titile:" 一级菜单 1",
             target: callback,
@@ -28,7 +28,7 @@ config = {
 ```
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
-addMenu(config)                                 // 添加菜单
+addMenu(nodeConfigs)                            // 添加菜单
 dispose()                                       // 销毁
 ```
 
