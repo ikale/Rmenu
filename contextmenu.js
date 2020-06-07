@@ -1,5 +1,5 @@
 class Contextmenu {
-  constructor(dom_config) {
+  constructor(nodeConfigs) {
     this._stopRun = false;
     this._inited = false;
     this.id = "Rmeun_" + Math.random() * 100000;
@@ -7,31 +7,43 @@ class Contextmenu {
     this._bid = 1;
     this.x = 0;
     this.y = 0;
-    this.display = false;    
-    this.isbind_containers = {};   
+    this.display = false;
+    this.isbind_containers = {};
 
-    this._config = null;
+    this._configs = {};
     let dom = document.createElement("div");
     dom.id = this.id;
     dom.className = "KR-meun";
     dom.style.position = "absolute";
     document.body.appendChild(dom);
     this.dom = document.getElementById(this.id);
-    this.hide()
+    this.hide();
 
-    if(dom_config){
-      this.update(dom_config)
+    if (nodeConfigs) {
+      this.update(nodeConfigs);
     }
   }
-  update(dom_config) {
-    if (!this.isObject(dom_config)) {
+
+  addMenu(nodeConfigs) {
+    if (nodeConfigs instanceof Array || !typeof nodeConfigs === "object") {
+      throw new Error("<Contextmenu :addMenu > This node configs is wrong!!");
+    }
+    for (const key in nodeConfigs) {
+      this._configs[key] = nodeConfigs[key];
+    }
+    this.update(this._configs)
+
+  }
+  
+  update(nodeConfigs) {
+    if (!this.isObject(nodeConfigs)) {
       throw new Error("Rmenu创建失败-->dom配置文件错误");
     }
     for (const el of this.dom.childNodes) {
       this.dom.removeChild(el);
     }
     this._inited = false;
-    this._config = dom_config;
+    this._configs = nodeConfigs;
     this.__init();
   }
   __init() {
@@ -39,7 +51,7 @@ class Contextmenu {
       return;
     }
     // 初始化创建主节点
-    let d = this._creat_dom(this._config);
+    let d = this._creat_dom(this._configs);
     this.dom.appendChild(d, true);
     this._inited = true;
   }
@@ -63,12 +75,12 @@ class Contextmenu {
         d.innerHTML = d.has_sub_dom
           ? `<i style="display:inline-block" class="micon-custoum iconfont ${
               val[key].icon
-            }"></i> <span class="mtitle" style="display:inline-block">${
-              val[key].title || key
-            }</span> <i class="micon iconfont iconmore"></i>`
+            }"></i> <span class="mtitle" style="display:inline-block">${val[key]
+              .title || key}</span> <i class="micon iconfont iconmore"></i>`
           : `<i style="display:inline-block" class="micon-custoum iconfont ${
               val[key].icon
-            }"></i> <span style="display:inline-block" class="mtitle">${val[key].title || key}</span>`;
+            }"></i> <span style="display:inline-block" class="mtitle">${val[key]
+              .title || key}</span>`;
 
         d.dom_info = val[key];
         d.init_sub = false;
@@ -123,10 +135,10 @@ class Contextmenu {
     }
     this._stopRun = true;
     let targetEl = this.targetEl;
-    let activeDom = this.activeDom
-    let func = function () {
+    let activeDom = this.activeDom;
+    let func = function() {
       if (typeof target_fn === "function") {
-        return target_fn(targetEl,activeDom,el);
+        return target_fn(targetEl, activeDom, el);
       }
 
       if (target_fn === undefined || target_fn === "") {
@@ -201,22 +213,22 @@ class Contextmenu {
     }
 
     let menu = this;
-    container.oncontextmenu = function (e) {
+    container.oncontextmenu = function(e) {
       // 阻止默认事件
       // console.log(e.path[0].bid);
-      e.preventDefault ? (e.returnValue = false) : "";             
+      e.preventDefault ? (e.returnValue = false) : "";
       for (const el of e.path) {
-        if(el.bid){
-          menu.activeBid = el.bid;  
+        if (el.bid) {
+          menu.activeBid = el.bid;
           menu.activeDom = menu.isbind_containers[el.bid];
-          break
+          break;
         }
       }
-      menu.targetEl = e.path[0]
-      menu.show(e.pageX+2, e.pageY+2);
+      menu.targetEl = e.path[0];
+      menu.show(e.pageX + 2, e.pageY + 2);
     };
 
-    container.onclick = function (e) {
+    container.onclick = function(e) {
       if (
         menu.display === true &&
         (e.clientX < menu.x ||
@@ -240,20 +252,20 @@ class Contextmenu {
     let container = this._get_container_domnode(ds);
     if (container.rmenu) {
       container.rmenu = null;
-      delete this.isbind_containers[container.bid]
-      container.oncontextmenu = function (e) {
+      delete this.isbind_containers[container.bid];
+      container.oncontextmenu = function(e) {
         e.preventDefault;
       };
-      container.onclick = function () {
+      container.onclick = function() {
         return false;
       };
     }
   }
-  dispose(){
+  dispose() {
     for (const key in this.isbind_containers) {
-          const bnode = this.isbind_containers[key]
-          this.unbind(bnode)
-          delete this.isbind_containers[key]
+      const bnode = this.isbind_containers[key];
+      this.unbind(bnode);
+      delete this.isbind_containers[key];
     }
   }
 }
