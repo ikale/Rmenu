@@ -90,6 +90,7 @@ defaultOptions = {
 #### 方法
 ```
 init(root_domId,?options)                         // 初始化
+getOptions()                                      // 获取配置信息
 ```
 
 ```
@@ -109,11 +110,6 @@ insertWindowTop(dom)                    // 在dom元素的上方插入窗口
 insertWindowBottom(dom)                 // 在dom元素的下方插入窗口
 insertWindowLeft(dom)                  
 insertWindowRight(dom) 
-```
-
-#### 属性
-```
-inited   // 是否已经初始化
 ```
 
 #### 事件Event
