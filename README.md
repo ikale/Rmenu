@@ -1,6 +1,6 @@
 # Rmenu
 #### deom:  https://ikale.github.io/Rmenu/demo.html
-123
+
 ## contextmenu.js 实现右键菜单 
 #### 创建实例：
 ```
@@ -71,19 +71,25 @@ new FrameContainer(?row_classname, ?col_classname, ?content_classname)
 
 #### 配置
 ```
-style_opts = {
-    contrl_size: 14,            //  控制器尺寸
-    splitline_size: 1,          //  分割线尺寸
-    splitline_color: "#aaa",    //  分割线颜色
-    border: "2px solid #aaa",   //  父级外框
-    min_size: 50,               //  拖动的最小间隔
-  };
+defaultOptions = {
+      isDraggable: true,                          //  是否开启拖拽
+      minSize: 10,                                //  拖动最小间隙
+      isPercent: true,                            //  宽高为百分比
+      ctrlElsize: 20,                             //  控制器大小
+      lineColor: "#000",                          //  分割线颜色
+      lineSize: 1,                                //  分割线大小
+      creatLine: true,                            //  是否创建分割线
+      draggableClassName: "draggable",            //  拖拽样式名称
+      rootDomBorder: "1px solid #000",            //  根节点边框
+      rowClassname: "r-row",                      //  行样式名称
+      columnClassname: "r-col",                   //  列样式名称
+      contentClassname: "r-content",              //  单元格样式名称
+    };
 ```
 
 #### 方法
 ```
-init(root_domId,?styleOption)          // 初始化
-setInitMode(mode)                      // 初始模式，row | col （注：页面没有 "结构"dom时才需要初始化，参考上方结构介绍）
+init(root_domId,?options)              // 初始化
 
 insertWindowTop(dom)                   // 在dom元素的上方插入窗口
 insertWindowBottom(dom)                // 在dom元素的下方插入窗口
@@ -98,7 +104,23 @@ inited   // 是否已经初始化
 
 #### 事件
 ```
- * Event 拖动: onDraging(function(a, b){})
+ * Event 拖动: onDraging((e)=>{})
+ 回调参数：e = {
+                    _event: "draging",
+                    aEl: {
+                    dom: aEl,
+                    width: aEl.offsetWidth,
+                    height: aEl.offsetHeight,
+                    },
+                    bEl: {
+                    dom: bEl,
+                    width: bEl.offsetWidth,
+                    height: bEl.offsetHeight,
+                    },
+          }
+                
  * Event 添加窗口 onAddWindow = function(e){}
+ 回调参数：e = { _event: "addWindow", dom: contentEl }
+ 
  ```
  
