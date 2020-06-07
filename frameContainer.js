@@ -1,15 +1,4 @@
 /**
- * 判断样式名是否存在
- * @param className
- * @param str
- * @return Bollen;
- */
-function hasClassName(className, str) {
-  let arr = className.trim().split(/\s+/);
-  return arr.indexOf(str) > -1 ? true : false;
-}
-
-/**
  * 获取dom坐标
  * @param obj
  * @return {x,y};
@@ -33,122 +22,152 @@ function getXY(obj) {
 }
 
 /**
- * 生成控制器
- * @param step_el
+ * 从父元素生成控制器
+ * @param setupEl
  * @param dirction  默认为横向 {1 'row'| 0 'col'}
+ * @param opts      配置项 className  ctrlElsize lineColor lineSize creatLine
  */
-function genControler(steup_el, dirction, size, line_size, line_color) {
-  dirction = typeof dirction === "string" ? dirction.trim() : "row";
-  size = typeof size === "number" ? size : 12;
-  line_size = typeof line_size === "number" ? line_size : 1;
-  line_color = typeof line_color === "string" ? line_color : "#000";
-
-  //   创建控制柄
-  let ctrl_el = document.createElement("div");
-  ctrl_el.ondragstart = function() {
-    return false;
-  };
-  ctrl_el.className = "draggable";
-  ctrl_el.el_size = size;
-  ctrl_el.dirction = dirction;
-
-  //   创建分割线
-  let line = document.createElement("div");
-  line.style.background = line_color;
-  line.style.margin = "0 auto";
-  line.style.position = "relative";
-  //   line.style.Zindex = 90 ;
-  line.ondragstart = function() {
-    return false;
-  };
-
-  if (dirction === "row") {
-    ctrl_el.style.height = size + "px";
-    ctrl_el.style.cursor = "s-resize";
-    line.style.width = "100%";
-    line.style.height = line_size + "px";
+function genControlerByParentEl(parentEl, dirction, opts) {
+  for (const setupEl of parentEl.children) {
+    genControlerByEl(setupEl, dirction, opts);
   }
-  if (dirction === "col") {
-    ctrl_el.style.width = size + "px";
-    ctrl_el.style.cursor = "w-resize";
-    line.style.width = line_size + "px";
-    line.style.height = "100%";
-  }
-  ctrl_el.appendChild(line);
-
-  //   ctrl_el.style.background = "#ff0000";
-  ctrl_el.style.position = "absolute";
-  ctrl_el.style.zIndex = 99;
-  ctrl_el.style.display = "flex";
-  ctrl_el.style.alignItems = "center";
-  ctrl_el.style.justifyContent = "center";
-  // 添加被控制的节点
-  ctrl_el.ctrlAfterEl = steup_el;
-  ctrl_el.ctrlBeforeEl = steup_el.previousElementSibling;
-  ctrl_el.ctrlAllChildrenEl = steup_el.parentElement.children;
-
-  // 目标dom指向控制器
-  steup_el.ctrlElement = ctrl_el;
-  //   steup_el.previousElementSibling
-
-  document.body.appendChild(ctrl_el);
 }
 
 /**
- * 设置控制器的位置
- * @param ctrl_el
+ * 生成控制器
+ * @param setupEl
+ * @param dirction  默认为横向 {1 'row'| 0 'col'}
+ * @param opts      配置项 className  ctrlElsize lineColor lineSize creatLine
  */
-function set_XY_Controler(ctrl_el) {
-  let dirction = ctrl_el.dirction;
-  let _ = getXY(ctrl_el.ctrlAfterEl);
-  let x = _.x;
-  let y = _.y;
+function genControlerByEl(setupEl, dirction, opts) {
+  typeof opts !== "object" || opts instanceof Array ? (opts = {}) : "";
+  opts = opts || {};
+  const draggableClassName = opts.draggableClassName || "draggable";
+  const ctrlElsize = opts.ctrlElsize || 16;
+  const lineColor = opts.lineColor || "#000";
+  const lineSize = opts.lineSize || 1;
+  const creatLine = opts.creatLine || true;
 
+  if (
+    !setupEl.previousElementSibling ||
+    setupEl.getElementsByClassName(draggableClassName).length > 0
+  ) {
+    return null;
+  }
+  setupEl.style.position = "relative";
+
+  // # 1.创建控制器
+  const ctrlEl = document.createElement("div");
+  ctrlEl.className = draggableClassName;
+  ctrlEl.style.position = "absolute";
+  ctrlEl.style.zIndex = 999;
+  ctrlEl.ondragstart = function () {
+    // 屏蔽默认拖拽
+    return false;
+  };
   if (dirction === "row") {
-    ctrl_el.style.top = y - ctrl_el.el_size / 2 + "px";
-    ctrl_el.style.left = x + "px";
-    ctrl_el.style.width = ctrl_el.ctrlAfterEl.parentElement.offsetWidth + "px";
+    ctrlEl.style.cursor = "s-resize";
+    ctrlEl.style.width = "100%";
+    ctrlEl.style.height = ctrlElsize + "px";
+    ctrlEl.style.top = (ctrlElsize / 2) * -1 + "px";
+    ctrlEl.style.left = 0;
   }
   if (dirction === "col") {
-    ctrl_el.style.top = y + "px";
-    ctrl_el.style.left = x - ctrl_el.el_size / 2 + "px";
-    ctrl_el.style.height =
-      ctrl_el.ctrlAfterEl.parentElement.offsetHeight + "px";
+    ctrlEl.style.cursor = "w-resize";
+    ctrlEl.style.height = "100%";
+    ctrlEl.style.width = ctrlElsize + "px";
+    ctrlEl.style.left = (ctrlElsize / 2) * -1 + "px";
+    ctrlEl.style.top = 0;
+  }
+
+  if (creatLine) {
+    // # 2.创建分割线
+    const line = document.createElement("div");
+    line.style.background = lineColor;
+    line.style.position = "relative";
+    dirction === "col"
+      ? ((line.style.height = "100%"),
+        (line.style.width = lineSize + "px"),
+        (line.style.left = ctrlElsize / 2 + "px"))
+      : "";
+    dirction === "row"
+      ? ((line.style.height = lineSize + "px"),
+        (line.style.width = "100%"),
+        (line.style.top = ctrlElsize / 2 + "px"))
+      : "";
+    line.ondragstart = function () {
+      // 屏蔽默认拖拽
+      return false;
+    };
+    ctrlEl.appendChild(line);
+  }
+  setupEl.appendChild(ctrlEl);
+}
+
+/**
+ * 销毁所有控制器
+ * @param dom   dom根节点
+ * @param className  样式名默认为 draggable
+ */
+function destroyControler(dom, className) {
+  className = className || "draggable";
+  while (dom.getElementsByClassName(className).length > 0) {
+    const ctrlEl = dom.getElementsByClassName(className)[0];
+    ctrlEl.parentElement.removeChild(ctrlEl);
   }
 }
 
-class DragEventMange {
-  constructor() {
-    this.ondraging = {};
-    this.ondragstop = {};
-    this._setDragEvent();
-    this.minSize = 20;
+/**
+ * 判断样式名是否存在
+ * @param className
+ * @param str
+ * @return Bollen;
+ */
+function hasClassName(className, str) {
+  if(className){
+    let arr = className.trim().split(/\s+/);
+    return arr.indexOf(str) > -1 ? true : false;
   }
-  on(type, id, fn) {
-    if (type === "ondraging") {
-      this.ondraging[id] = fn;
-    }
-    if (type === "ondragstop") {
-      this.ondragstop[id] = fn;
-    }
-  }
-  off(type, id) {
-    if (type === "ondraging") {
-      delete this.ondraging[id];
-    }
-    if (type === "ondragstop") {
-      delete this.ondragstop[id];
-    }
-  }
+  return false
+}
 
-  _enableSelect() {
+/**
+ * 设置控制器的拖拽
+ * @param callback                拖拽时触发的回调,用于外部使用拖拽事件 callback({aEl,bEl})
+ * @param minSize                 最小间隙 | 50
+ * @param isPercent               百分比 | true
+ * @return draggableClassName;    控制器的样式名称 | draggable
+ */
+function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
+  draggableClassName = draggableClassName || "draggable";
+  isPercent===false?(isPercent=false):(isPercent=true);
+  
+  minSize = minSize||50;
+  var drag = null;
+  var type = "w-resize";
+  var totalHeigh;
+  var totalWidth;  
+  var elX;
+  var elY;
+  var elTop;
+  var elLeft;
+
+  document.removeEventListener("mousedown", handleEvent);
+  document.removeEventListener("mousemove", handleEvent);
+  document.removeEventListener("mouseup", handleEvent);
+
+  document.addEventListener("mousedown", handleEvent);
+  document.addEventListener("mousemove", handleEvent);
+  document.addEventListener("mouseup", handleEvent);
+
+  function _enableSelect() {
     document.body.style.mozUserSelect = "none";
     document.body.style.WebkitUserSelect = "none";
     document.body.style.msUserSelect = "none";
     document.body.style.KhtmlUserSelect = "none";
     document.body.style.UserSelect = "none";
   }
-  _disablSselect() {
+  function _disablSselect() {
     document.body.style.mozUserSelect = "text";
     document.body.style.WebkitUserSelect = "text";
     document.body.style.msUserSelect = "text";
@@ -156,112 +175,122 @@ class DragEventMange {
     document.body.style.UserSelect = "text";
   }
 
-  _setDragEvent() {
-    var that = this;
-    var drag = null;
-    var diffx = 0;
-    var diffy = 0;
-    var h;
-    var w;
+  function handleEvent(event) {
+    var target = event.target || event.srcElement;
+    switch (event.type) {
+      case "mousedown":
+        if (
+          hasClassName(target.className, draggableClassName) ||
+          hasClassName(
+            target.parentElement ? target.parentElement.className : "",
+            draggableClassName
+          )
+        ) {
+          hasClassName(target.parentElement.className, draggableClassName)
+            ? (drag = target.parentElement)
+            : (drag = target);
 
-    document.removeEventListener("mousedown", handleEvent);
-    document.removeEventListener("mousemove", handleEvent);
-    document.removeEventListener("mouseup", handleEvent);
-
-    document.addEventListener("mousedown", handleEvent);
-    document.addEventListener("mousemove", handleEvent);
-    document.addEventListener("mouseup", handleEvent);
-
-    function handleEvent(event) {
-      var target = event.target || event.srcElement;
-      switch (event.type) {
-        case "mousedown":
-          if (
-            hasClassName(target.className, "draggable") ||
-            hasClassName(
-              target.parentElement ? target.parentElement.className : "",
-              "draggable"
-            )
-          ) {
-            hasClassName(target.parentElement.className, "draggable")
-              ? (target = target.parentElement)
-              : "";
-            drag = target;
-            diffx = event.clientX - target.offsetLeft;
-            diffy = event.clientY - target.offsetTop;
-            h = drag.ctrlBeforeEl.offsetHeight + drag.ctrlAfterEl.offsetHeight;
-            w = drag.ctrlBeforeEl.offsetWidth + drag.ctrlAfterEl.offsetWidth;
-          }
-          break;
-        case "mousemove":
-          if (drag !== null) {
-            that._enableSelect();
-            if (drag.dirction === "col") {
-              drag.style.left = event.clientX - diffx + "px";
-              let diffx_px = event.clientX - drag.ctrlAfterEl.offsetLeft;
-              let x = drag.ctrlBeforeEl.offsetWidth + diffx_px;
-              let x2 = w - x;
-
-              if (x > that.minSize && x2 > that.minSize) {
-                drag.ctrlBeforeEl.style.width = x + "px";
-                drag.ctrlAfterEl.style.width = x2 + "px";
-              }
-            }
-            if (drag.dirction === "row") {
-              drag.style.top = event.clientY - diffy + "px";
-              let diffy_px = event.clientY - drag.ctrlAfterEl.offsetTop;
-              let y = drag.ctrlBeforeEl.offsetHeight + diffy_px;
-              let y2 = h - y;
-
-              if (y > that.minSize && y2 > that.minSize) {
-                drag.ctrlBeforeEl.style.height = y + "px";
-                drag.ctrlAfterEl.style.height = y2 + "px";
-              }
-            }
-            if (drag.ctrlAfterEl.style.height.split("px")[1] === "") {
-              let h_pe =
-                (h / drag.ctrlAfterEl.parentElement.offsetHeight) * 100;
-              drag.ctrlAfterEl.style.height =
-                h_pe * (drag.ctrlAfterEl.offsetHeight / h) + "%";
-              drag.ctrlBeforeEl.style.height =
-                h_pe * (drag.ctrlBeforeEl.offsetHeight / h) + "%";
-            }
-            //   更新 控制器的位置
-            for (let elctrl of document.getElementsByClassName("draggable")) {
-              set_XY_Controler(elctrl);
-            }
-
-            for (let key in that.ondraging) {
-              let fn = that.ondraging[key];
-              if (typeof fn === "function") {
-                let b = {
-                  _event: "draging",
-                  dom: drag.ctrlAfterEl,
-                  width: drag.ctrlAfterEl.offsetWidth,
-                  height: drag.ctrlAfterEl.offsetHeight,
-                };
-                let a = {
-                  _event: "draging",
-                  dom: drag.ctrlBeforeEl,
-                  width: drag.ctrlBeforeEl.offsetWidth,
-                  height: drag.ctrlBeforeEl.offsetHeight,
-                };
-                fn(a, b);
-              }
-            }
-          }
-          break;
-        case "mouseup":
-          that._disablSselect();
+          type = drag.style.cursor;
+          elX = drag.parentElement.previousElementSibling.offsetWidth;
+          elY = drag.parentElement.previousElementSibling.offsetHeight;
+          elTop = getXY(drag.parentElement.previousElementSibling).y;
+          elLeft = getXY(drag.parentElement.previousElementSibling).x;
+          totalHeigh =
+            drag.parentElement.offsetHeight +
+            drag.parentElement.previousElementSibling.offsetHeight; //前后元素的总高度
+          totalWidth =
+            drag.parentElement.offsetWidth +
+            drag.parentElement.previousElementSibling.offsetWidth; //前后元素的总宽度
+          // console.log("按下,总高度：", totalHeigh, elY);
+        } else {
           drag = null;
-          break;
-      }
+        }
+        break;
+      case "mousemove":
+        if (drag) {
+          _enableSelect();
+          const bEl = drag.parentElement; // 控制器所在的Dom
+          const aEl = bEl.previousElementSibling;
+          // 上下移动
+          if (type === "s-resize") {
+            var diffy = elY - event.clientY + elTop;    
+            var a = event.clientY-getXY(aEl).y
+            var b = getXY(bEl).y+ bEl.offsetHeight - event.clientY
+            // console.log("总高度",totalHeigh)
+            if(a>minSize && b>minSize){
+                bEl.style.height = totalHeigh - elY + diffy + "px";
+                aEl.style.height = elY - diffy + "px";
+            }
+            // 触发拖拽回调
+            typeof callback === "function"
+              ? callback({
+                  _event: "draging",
+                  aEl: {
+                    dom: aEl,
+                    width: aEl.offsetWidth,
+                    height: aEl.offsetHeight,
+                  },
+                  bEl: {
+                    dom: bEl,
+                    width: bEl.offsetWidth,
+                    height: bEl.offsetHeight,
+                  },
+                })
+              : null;
+          }
+
+          // 左右移动
+          if (type === "w-resize") {
+            var diffx = elX - event.clientX + elLeft;
+            // console.log("开始移动", elX);
+            var a = event.clientX-getXY(aEl).x
+            var b = getXY(bEl).x+ bEl.offsetWidth - event.clientX
+
+            if (a>minSize && b>minSize) {
+              bEl.style.width = totalWidth - elX + diffx + "px";
+              aEl.style.width = elX - diffx + "px";
+            }
+          }
+          // 触发拖拽回调
+          typeof callback === "function"
+            ? callback({
+                _event: "draging",
+                aEl: {
+                  dom: aEl,
+                  width: aEl.offsetWidth,
+                  height: aEl.offsetHeight,
+                },
+                bEl: {
+                  dom: bEl,
+                  width: bEl.offsetWidth,
+                  height: bEl.offsetHeight,
+                },
+              })
+            : null;
+        }
+        break;
+      case "mouseup":
+        if (drag && isPercent) {
+          //  转为百分比
+          const bEl = drag.parentElement; // 控制器所在的Dom
+          const aEl = bEl.previousElementSibling;
+          if (type === "w-resize") {
+            const w = bEl.parentElement.offsetWidth;
+            bEl.style.width = (bEl.offsetWidth / w) * 100 + "%";
+            aEl.style.width = (aEl.offsetWidth / w) * 100 + "%";
+          }
+          if (type === "s-resize") {
+            const h = bEl.parentElement.offsetHeight;
+            aEl.style.height = (aEl.offsetHeight / h) * 100 + "%";
+            bEl.style.height = (bEl.offsetHeight / h) * 100 + "%";
+          }
+        }
+        _disablSselect();
+        drag = null;
+        break;
     }
   }
 }
-// 创建事件管理器
-
-var dragEvent = new DragEventMange();
 
 /**
  * BaseContainer
@@ -269,128 +298,185 @@ var dragEvent = new DragEventMange();
  * 事件: onDraging(function(a, b){})
  */
 class BaseContainer {
-  constructor(row_classname, col_classname, content_classname) {
-    this.ROW_CLASS_NAME = row_classname || "r-row";
-    this.ClOUMN_CLASS_NAME = col_classname || "r-col";
-    this.CONTENT_CLASS_NAME = content_classname || "r-content";
-  }
-  init(id, styleOption) {
-    this.ID = id;
-    this.set_dom(styleOption);
+  constructor() {}
+
+  init(root_domId, options) {
+    this.ID = root_domId;
+    this.set_dom(options);
     this.inited = true;
   }
+
   /**
-   * 设置样式
-   * @param style {border:"边框",contrl_size:"控制器大小",splitline_size:"分割线大小",splitline_color:"分割线颜色",min_size:"拖动最小间隙"}
+   * 拖拽事件
+   * @param fn:function({aEl, bEl}){}
    */
-  _set_style(styleOption) {
-    var style = styleOption ? styleOption : {};
-    this.min_size = style.min_size || 20;
-    this.border = style.border || "1px solid #000";
-    this.contrl_size = style.contrl_size || 14;
-    this.splitline_size = style.splitline_size || 1;
-    this.splitline_color = style.splitline_color || "#000";
-
-    dragEvent.minSize = this.min_size;
-    document.getElementById(this.ID).style.border = this.border;
-    this._setControler(
-      document
-        .getElementById(this.ID)
-        .getElementsByClassName(this.CONTENT_CLASS_NAME),
-      this.contrl_size,
-      this.splitline_size,
-      this.splitline_color
-    );
-  }
-
   onDraging(fn) {
     //   拖动事件
-    dragEvent.on("ondraging", this.ID, fn);
-  }
-
-  set_dom(style) {
-    let dom = document.getElementById(this.ID);
-    dom.style.boxSizing = "border-box";
-
-    dom.ondragstart = function() {
-      return false;
-    };
-    this._initialMode(dom);
-    this._setColumn(dom.getElementsByClassName(this.ClOUMN_CLASS_NAME));
-    this._setRow(dom.getElementsByClassName(this.ROW_CLASS_NAME));
-    this._set_style(style);
-
-    // 更新 控制器
-    this.updateControler();
-  }
-
-  updateControler() {
-    // 更新 控制器的位置
-    for (let elctrl of document.getElementsByClassName("draggable")) {
-      set_XY_Controler(elctrl);
+    if (this.isDraggable) {
+      this.onDragingCallback = fn;
+      setControlerDrag(
+        fn,
+        this.minSize,
+        this.isPercent,
+        this.draggableClassName
+      );
     }
   }
 
-  _setControler(el_contents, size, line_size, line_color) {
-    for (const el of el_contents) {
-      if (el.previousElementSibling) {
-        //   如果存在兄弟节点, 当前为'r-content' 且下一个也是 'r-content' 就添加控制器
+  /**
+   * 设置dom
+   * @param options
+   */
+  set_dom(options) {
+    typeof options !== "object" || options instanceof Array
+      ? (options = {})
+      : "";
+    options = options ? options : {};
+
+    this.rootDomBorder = options.rootDomBorder || "1px solid #000";
+    this.ctrlElsize = options.ctrlElsize || 20;
+    this.lineSize = options.lineSize || 1;
+    this.lineColor = options.lineColor || "#000";
+
+    this.draggableClassName = options.draggableClassName || "draggable";
+    this.minSize = options.minSize || 10;
+    this.isDraggable = options.isDraggable || true;
+    this.isPercent = options.isPercent || true;
+    this.ROW_CLASS_NAME = options.rowClassname || "r-row";
+    this.ClOUMN_CLASS_NAME = options.columnClassname || "r-col";
+    this.CONTENT_CLASS_NAME = options.contentClassname || "r-content";
+
+    const rootDom = document.getElementById(this.ID);
+    const cols = Array.from(
+      rootDom.getElementsByClassName(this.ClOUMN_CLASS_NAME)
+    );
+    const rows = Array.from(
+      rootDom.getElementsByClassName(this.ROW_CLASS_NAME)
+    );
+    const contents = Array.from(
+      rootDom.getElementsByClassName(this.CONTENT_CLASS_NAME)
+    );
+    // 1.初始化 静态结构
+    this._initialMode(cols, rows);
+    this._setColumn(rootDom.getElementsByClassName(this.ClOUMN_CLASS_NAME));
+    this._setRow(rootDom.getElementsByClassName(this.ROW_CLASS_NAME));
+
+    // 2.设置样式
+    rootDom.style.boxSizing = "border-box";
+    rootDom.ondragstart = function () {
+      return false;
+    };
+    rootDom.style.border = this.rootDomBorder;
+
+    // 3.拖拽控制器
+    if (this.isDraggable) {
+      // 生成控制器
+      this.controlerOpts = {
+        draggableClassName: this.draggableClassName,
+        ctrlElsize: this.ctrlElsize,
+        lineColor: this.lineColor,
+        lineSize: this.lineSize,
+        creatLine: this.creatLine,
+      };
+
+      for (const content of contents) {
+        this.addControler(content);
+      }
+      // 设置拖拽
+      setControlerDrag(
+        this.onDragingCallback,
+        this.minSize,
+        this.isPercent,
+        this.draggableClassName
+      );
+    }
+  }
+
+  /**
+   * 添加控制器
+   * @param contentEl
+   */
+  addControler(contentEl) {
+    if (contentEl.previousElementSibling && this.isDraggable) {
+      //   如果存在兄弟节点, 当前为'r-content' 且下一个也是 'r-content' 就添加控制器
+      if (
+        hasClassName(contentEl.className, this.CONTENT_CLASS_NAME) &&
+        hasClassName(
+          contentEl.previousElementSibling.className,
+          this.CONTENT_CLASS_NAME
+        )
+      ) {
+        let dirction;
         if (
-          hasClassName(el.className, this.CONTENT_CLASS_NAME) &&
+          hasClassName(contentEl.parentElement.className, this.ROW_CLASS_NAME)
+        ) {
+          dirction = "row";
+        }
+        if (
           hasClassName(
-            el.previousElementSibling.className,
-            this.CONTENT_CLASS_NAME
+            contentEl.parentElement.className,
+            this.ClOUMN_CLASS_NAME
           )
         ) {
-          let dirction;
-          if (hasClassName(el.parentElement.className, this.ROW_CLASS_NAME)) {
-            dirction = "row";
-          }
-          if (
-            hasClassName(el.parentElement.className, this.ClOUMN_CLASS_NAME)
-          ) {
-            dirction = "col";
-          }
-          if (dirction) {
-            genControler(el, dirction, size, line_size, line_color);
-          } else {
-            throw new Error("_setControler 找不到方向dirction");
-          }
+          dirction = "col";
+        }
+        if (dirction) {
+          genControlerByEl(contentEl, dirction, this.controlerOpts);
+        } else {
+          throw new Error("addControler 找不到方向dirction");
         }
       }
     }
   }
 
+  _initialMode(cols, rows) {
+    // 初始化静态dom结构, 用于保证结构结构正确性
+    destroyControler(document.getElementById(this.ID), this.draggableClassName);
+
+    for (let col of cols) {
+      this._initColumn(col);
+    }
+    for (let row of rows) {
+      this._initRow(row);
+    }
+  }
+
   _setColumn(cols) {
+    // 设置col的结构样式
     for (const el of cols) {
       // _initColumn(el);
       let chirld_n = el.parentElement.children.length;
       el.style.height = 100 / chirld_n + "%";
       el.style.display = "flex";
+
       // 处理 r-content
       for (const cel of el.children) {
         this._setContent(cel, "col");
       }
     }
   }
+
   _setRow(rows) {
-    for (let el of rows) {
+    // 设置row的结构样式
+    for (const el of rows) {
       let chirld_n = el.parentElement.children.length;
       el.style.height = 100 / chirld_n + "%";
-      el.style.display = "block";
+      el.style.display = "block";      
       // 处理 r-content
       for (let cel of el.children) {
         this._setContent(cel, "row");
       }
     }
   }
+
   _setContent(dom, dirction, child_n) {
+    // 设置content的结构样式
     let n = child_n || dom.parentElement.children.length;
     if (dirction === "row") {
       dom.style.width = dom.style.width || "100%";
       dom.style.height = dom.style.height || 100 / n + "%";
       dom.style.boxSizing = "border-box";
-      dom.style.overflow = "hidden";
+      dom.style.overflow = "hidden";      
     }
     if (dirction === "col") {
       dom.style.height = dom.style.height || "100%";
@@ -400,25 +486,8 @@ class BaseContainer {
     }
   }
 
-  _initialMode(dom) {
-    //
-    let cols = [];
-    for (let el of dom.getElementsByClassName(this.ClOUMN_CLASS_NAME)) {
-      cols.push(el);
-    }
-    for (let col of cols) {
-      this._initColumn(col);
-    }
-    //
-    let rows = [];
-    for (let el of dom.getElementsByClassName(this.ROW_CLASS_NAME)) {
-      rows.push(el);
-    }
-    for (let row of rows) {
-      this._initRow(row);
-    }
-  }
   _initRow(row) {
+    // 初始化 修正静态row结构
     let root_dom = row.parentElement.parentElement;
     let parent_dom = row.parentElement;
     if (hasClassName(root_dom.className, this.ROW_CLASS_NAME)) {
@@ -435,6 +504,7 @@ class BaseContainer {
     }
   }
   _initColumn(col) {
+    // 初始化 修正静态column结构
     let root_dom = col.parentElement.parentElement;
     let parent_dom = col.parentElement;
     if (hasClassName(root_dom.className, this.ClOUMN_CLASS_NAME)) {
@@ -461,21 +531,21 @@ class BaseContainer {
  * Event 添加窗口 onAddWindow = function(e){}
  */
 class FrameContainer extends BaseContainer {
-  constructor(row_classname, col_classname, content_classname) {
-    super(row_classname, col_classname, content_classname);
+  constructor() {
+    super();
   }
 
   /**
    * 初始化
    * @param root_domId    根节点id
-   * @param styleOption   样式选项
+   * @param options       配置选项
    */
-  init(root_domId, styleOption) {
+  init(root_domId, options) {
     this.ID = root_domId;
-    this.set_dom(styleOption);
+    this.set_dom(options);
     this.inited = true;
 
-    let root_dom = document.getElementById(this.ID);
+    const root_dom = document.getElementById(this.ID);
     if (
       root_dom.getElementsByClassName(this.ClOUMN_CLASS_NAME).length > 0 ||
       root_dom.getElementsByClassName(this.ROW_CLASS_NAME).length > 0
@@ -491,52 +561,52 @@ class FrameContainer extends BaseContainer {
    * @param mode          row行模式|| col列模式
    * @returns contentEl
    */
-  setInitMode(mode) {
+  setInitMode(mode,dom) {
     if (!mode) {
       throw new Error("<FrameContainer> setInitMode:faild, mode has not find");
     }
 
-    if (this.isSetInitMode) {
-      console.warn("<FrameContainer> setInitMode:has been set mode!");
-      return null;
-    }
-
     let parent_dom;
     let contentEl;
-    let root_dom = document.getElementById(this.ID);
+    let root_dom = dom;
     if (mode === "row") {
       parent_dom = this._createRowDom();
       contentEl = this._createContentDom(100, "row");
-      const putNodes = root_dom.childNodes;
-      while (putNodes.length > 0) {
-        contentEl.appendChild(putNodes[0]);
+      const putNodes = Array.from(root_dom.childNodes);
+      for (const el of putNodes) {
+        if (!hasClassName(el.className, this.draggableClassName)) {
+          contentEl.appendChild(el);
+        }
       }
       parent_dom.appendChild(contentEl);
       root_dom.appendChild(parent_dom);
+
     }
     if (mode === "col") {
       parent_dom = this._createColunmtDom();
       contentEl = this._createContentDom(100, "col");
-      const putNodes = root_dom.childNodes;
-      while (putNodes.length > 0) {
-        contentEl.appendChild(putNodes[0]);
+      const putNodes = Array.from(root_dom.childNodes);
+      for (const el of putNodes) {
+        if (!hasClassName(el.className, this.draggableClassName)) {
+          contentEl.appendChild(el);
+        }
       }
       parent_dom.appendChild(contentEl);
       root_dom.appendChild(parent_dom);
     }
-    this.isSetInitMode = true;
     return contentEl;
   }
 
   /**
    * 添加行
    * @param dom
+   * @param insertPosition   插入的位置 默认值 "bottom" ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
    * @param putNode 额外需要载入的节点
    */
-  addRow(dom, putNode) {
-    if (!this.isSetInitMode) {
-      throw new Error("<FrameContainer> : is not setInitMode");
-    }
+  addRow(dom, insertPosition, putNode) {
+    insertPosition = insertPosition || "bottom";
+
+    // 1.查找目标contentEl
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       var _is_go = true;
       while (_is_go) {
@@ -546,69 +616,106 @@ class FrameContainer extends BaseContainer {
         }
         if (dom.id === this.ID) {
           _is_go = false;
-          throw new Error(
-            `<FrameContainer> addRow : dom has not classname of ${this.CONTENT_CLASS_NAME}`
-          );
+          dom = this.setInitMode("row",document.getElementById(this.ID))
         }
       }
     }
 
-    let parent_dom;
-    let content_el;
+    // 2.初始化结构
+    var content_el;
+    var parent_dom;
+    var thisParentEl; // parentEl  (row)
+    var thisContentEl; // contentEl
+    var newContentEl; //  新contentEl
 
-    var sameMode = false;
+    // ### 在列模式时，创建行框架 在添加content
+    if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
+      console.log("添加行模式框架");
+      dom = this.setInitMode("row",dom)
+    }
 
-    // 直接添加 content
+    // ### 直接添加 content
     if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
       parent_dom = dom.parentElement;
       let size = ((dom.offsetHeight / parent_dom.offsetHeight) * 100) / 2;
       dom.style.height = size + "%";
       content_el = this._createContentDom(size, "row");
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
-
-      sameMode = true;
-      if (dom.nextElementSibling) {
-        // 修改控制器的指向的前后Dom元素
-        dom.nextElementSibling.ctrlElement.ctrlBeforeEl = content_el;
-        parent_dom.insertBefore(content_el, dom.nextElementSibling);
-        this.addControler(content_el);
-        this.updateControler();
-      } else {
-        parent_dom.appendChild(content_el);
-        this.addControler(content_el);
-        this.updateControler();
-      }
-    }
-
-    // 创建行框架 在添加content
-    if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
-      parent_dom = this._createRowDom();
-      content_el = this._createContentDom(100, "row");
-      const putNodes = dom.childNodes;
-      while (putNodes.length > 0) {
-        content_el.appendChild(putNodes[0]);
-      }
-      putNode instanceof Node ? content_el.appendChild(putNode) : "";
       parent_dom.appendChild(content_el);
-      dom.appendChild(parent_dom);
+      console.log("直接添加行contentEl");
+      this.addControler(content_el);
+
+      thisContentEl = dom;
+      newContentEl = content_el;
+      thisParentEl = parent_dom;
     }
 
-    // 设置回调事件
+
+    // 3.排序 ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
+    switch (insertPosition) {
+      case "top":
+        if (
+          newContentEl.getElementsByClassName(this.draggableClassName).length >
+          0
+        ) {
+          destroyControler(newContentEl);
+          thisParentEl.insertBefore(newContentEl, thisParentEl.children[0]);
+          this.addControler(thisParentEl.children[0]);
+        }
+        break;
+      case "bottom":
+        if (
+          newContentEl.getElementsByClassName(this.draggableClassName).length >
+          0
+        ) {
+          thisParentEl.appendChild(newContentEl);
+        }
+        break;
+      case "before":
+        if (thisParentEl.children.length > 1) {
+          if (
+            thisContentEl.getElementsByClassName(this.draggableClassName)
+              .length > 0
+          ) {
+            thisParentEl.insertBefore(newContentEl, thisContentEl);
+          } else {
+            const ctrlEl = newContentEl.getElementsByClassName(
+              this.draggableClassName
+            )[0];
+            thisContentEl.appendChild(ctrlEl);
+            thisParentEl.insertBefore(newContentEl, thisContentEl);
+          }
+        }
+        break;
+      case "after":
+        if (thisParentEl.children.length > 2) {
+          if (thisContentEl.nextElementSibling) {
+            thisParentEl.insertBefore(
+              newContentEl,
+              thisContentEl.nextElementSibling
+            );
+          }
+        }
+        break;
+    }
+
+    // 4.设置回调事件
     typeof this.onAddRow === "function"
-      ? this.onAddRow({ _event: "addRow", dom: content_el })
+      ? this.onAddRow({ _event: "addRow", dom: newContentEl })
       : null;
-    return [sameMode, content_el];
+    return [newContentEl, thisContentEl];
   }
 
   /**
    * 添加列
    * @param dom
+   * @param insertPosition   插入的位置 默认值 "bottom" ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
    * @param putNode 额外需要载入的节点
    */
-  addColumn(dom, putNode) {
-    if (!this.isSetInitMode) {
-      throw new Error("<FrameContainer> : is not setInitMode");
-    }
+  addColumn(dom,insertPosition,putNode) {
+    insertPosition = insertPosition || "bottom";
+
+    // 1.查找目标contentEl
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       var _is_go = true;
       while (_is_go) {
@@ -618,18 +725,25 @@ class FrameContainer extends BaseContainer {
         }
         if (dom.id === this.ID) {
           _is_go = false;
-          throw new Error(
-            `<FrameContainer> addRow : dom has not classname of ${this.CONTENT_CLASS_NAME}`
-          );
+          dom = this.setInitMode("col",document.getElementById(this.ID))
         }
       }
     }
-    let parent_dom;
-    let content_el;
 
-    var sameMode = false;
+    // 2.初始化结构
+    var content_el;
+    var parent_dom;
+    var thisParentEl; // parentEl  (col)
+    var thisContentEl; // contentEl
+    var newContentEl; //  新contentEl
 
-    // 直接添加 content
+    // ### 在行模式下，创建列框架 在添加content
+    if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
+      console.log("添加列模式框架");
+      dom = this.setInitMode("col",dom)
+    }
+
+    // ### 直接添加 content
     if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
       parent_dom = dom.parentElement;
       let size = ((dom.offsetWidth / parent_dom.offsetWidth) * 100) / 2;
@@ -637,154 +751,111 @@ class FrameContainer extends BaseContainer {
       content_el = this._createContentDom(size, "col");
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
 
-      sameMode = true;
-      if (dom.nextElementSibling) {
-        // 修改控制器的指向的前后Dom元素
-        dom.nextElementSibling.ctrlElement.ctrlBeforeEl = content_el;
-        parent_dom.insertBefore(content_el, dom.nextElementSibling);
-        this.addControler(content_el);
-        this.updateControler();
-      } else {
-        parent_dom.appendChild(content_el);
-        this.addControler(content_el);
-        this.updateControler();
-      }
-    }
-    // 创建列框架 在添加content
-    if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
-      parent_dom = this._createColunmtDom();
-      content_el = this._createContentDom(100, "col");
-      const putNodes = dom.childNodes;
-      while (putNodes.length > 0) {
-        content_el.appendChild(putNodes[0]);
-      }
-      putNode instanceof Node ? content_el.appendChild(putNode) : "";
-
       parent_dom.appendChild(content_el);
-      dom.appendChild(parent_dom);
+      this.addControler(content_el);
+
+      thisContentEl = dom;
+      newContentEl = content_el;
+      thisParentEl = parent_dom;
     }
 
-    // 设置回调事件
-    typeof this.onAddColumn === "function"
-      ? this.onAddColumn({ _event: "addColumn", dom: content_el })
-      : null;
 
-    return [sameMode, content_el];
+    // 3.排序 ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
+    switch (insertPosition) {
+      case "top":
+        if (
+          newContentEl.getElementsByClassName(this.draggableClassName).length >
+          0
+        ) {
+          destroyControler(newContentEl);
+          thisParentEl.insertBefore(newContentEl, thisParentEl.children[0]);
+          this.addControler(thisParentEl.children[0]);
+        }
+        break;
+      case "bottom":
+        if (
+          newContentEl.getElementsByClassName(this.draggableClassName).length >
+          0
+        ) {
+          thisParentEl.appendChild(newContentEl);
+        }
+        break;
+      case "before":
+        if (thisParentEl.children.length > 1) {
+          if (
+            thisContentEl.getElementsByClassName(this.draggableClassName)
+              .length > 0
+          ) {
+            thisParentEl.insertBefore(newContentEl, thisContentEl);
+          } else {
+            const ctrlEl = newContentEl.getElementsByClassName(
+              this.draggableClassName
+            )[0];
+            thisContentEl.appendChild(ctrlEl);
+            thisParentEl.insertBefore(newContentEl, thisContentEl);
+          }
+        }
+        break;
+      case "after":
+        if (thisParentEl.children.length > 2) {
+          if (thisContentEl.nextElementSibling) {
+            thisParentEl.insertBefore(
+              newContentEl,
+              thisContentEl.nextElementSibling
+            );
+          }
+        }
+        break;
+    }
+
+    // 4.设置回调事件
+    typeof this.onAddColumn === "function"
+      ? this.onAddColumn({ _event: "addColumn", dom: newContentEl })
+      : null;
+    return [newContentEl, thisContentEl];
   }
 
   insertWindowTop(dom) {
-    var arr;
-    if (!this.isSetInitMode) {
-      dom = this.setInitMode("row");
-      dom = this.addRow(dom)[1];
-    } else {
-      arr = this.addRow(dom);
-      !arr[0] ? (dom = this.addRow(arr[1])[1]) : (dom = arr[1]);
-    }
-    var pel = dom.previousElementSibling;
-    while (pel.children.length > 0) {
-      dom.appendChild(pel.children[0]);
-    }
+    dom = this.addRow(dom, "before")[1];
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
   insertWindowBottom(dom) {
-    var arr;
-    if (!this.isSetInitMode) {
-      dom = this.setInitMode("row");
-      dom = this.addRow(dom)[1];
-    } else {
-      arr = this.addRow(dom);
-      !arr[0] ? (dom = this.addRow(arr[1])[1]) : (dom = arr[1]);
-    }
+    dom = this.addRow(dom, "after")[1];
+
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
   insertWindowLeft(dom) {
-    var arr;
-    if (!this.isSetInitMode) {
-      dom = this.setInitMode("col");
-      dom = this.addColumn(dom)[1];
-    } else {
-      arr = this.addColumn(dom);
-      !arr[0] ? (dom = this.addColumn(arr[1])[1]) : (dom = arr[1]);
-    }
-    var pel = dom.previousElementSibling;
-    while (pel.children.length > 0) {
-      dom.appendChild(pel.children[0]);
-    }
+    dom=this.addColumn(dom, "before")[1];
+    
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
   insertWindowRight(dom) {
-    var arr;
-    if (!this.isSetInitMode) {
-      dom = this.setInitMode("col");
-      dom = this.addColumn(dom)[1];
-    } else {
-      arr = this.addColumn(dom);
-      !arr[0] ? (dom = this.addColumn(arr[1])[1]) : (dom = arr[1]);
-    }
+    dom=this.addColumn(dom, "after")[1];
+    
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({ _event: "addWindow", dom: dom })
       : null;
   }
 
-  /**
-   * 添加控制器
-   * @param el
-   */
-  addControler(el) {
-    if (
-      el.parentElement.getElementsByClassName(this.CONTENT_CLASS_NAME).length >
-      1
-    ) {
-      //   如果存在兄弟节点, 当前为'r-content' 且下一个也是 'r-content' 就添加控制器
-      if (
-        hasClassName(el.className, this.CONTENT_CLASS_NAME) &&
-        hasClassName(
-          el.previousElementSibling.className,
-          this.CONTENT_CLASS_NAME
-        )
-      ) {
-        let dirction;
-        if (hasClassName(el.parentElement.className, this.ROW_CLASS_NAME)) {
-          dirction = "row";
-        }
-        if (hasClassName(el.parentElement.className, this.ClOUMN_CLASS_NAME)) {
-          dirction = "col";
-        }
-        if (dirction) {
-          genControler(
-            el,
-            dirction,
-            this.contrl_size,
-            this.splitline_size,
-            this.splitline_color
-          );
-        } else {
-          throw new Error("_setControler 找不到方向dirction");
-        }
-      }
-    }
-  }
-
   _createContentDom(size, dirction) {
     let el = document.createElement("div");
     el.className = this.CONTENT_CLASS_NAME;
-
+    el.style.position = "relative";
     if (dirction === "row") {
       el.style.width = "100%";
       el.style.height = size + "%";
       el.style.boxSizing = "border-box";
-      el.style.overflow = "hidden";
+      el.style.overflow = "hidden";      
     }
     if (dirction === "col") {
       el.style.height = "100%";
@@ -798,7 +869,7 @@ class FrameContainer extends BaseContainer {
     let el = document.createElement("div");
     el.className = this.ROW_CLASS_NAME;
     el.style.height = 100 + "%";
-    el.style.display = "block";
+    el.style.display = "block"    
     return el;
   }
   _createColunmtDom() {
