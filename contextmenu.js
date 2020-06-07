@@ -227,13 +227,13 @@ class Contextmenu {
     this.ischangeY = false;
     const targetEl = this.dom.lastChild.lastChild;
 
-    if (getXY(targetEl).y > document.body.clientHeight) {
+    if (getXY(targetEl).y > this.activeDom.clientHeight) {
       // console.log("1111111111111更改弹出方式，向上弹出");
       this.ischangeY = true;
       this.dom.style.top = y - this.dom.lastChild.clientHeight + "px";
     }
 
-    if (getXY(targetEl).x + targetEl.clientWidth > document.body.clientWidth) {
+    if (getXY(targetEl).x + targetEl.clientWidth > this.activeDom.clientWidth) {
       // console.log("1111111111更改弹出方式，向左弹出");
       this.dom.style.left = x - this.dom.lastChild.clientWidth + "px";
       this.ischangeX = true;
