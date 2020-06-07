@@ -5,7 +5,7 @@
 #### 创建实例：
 ```
 new Contextmenu(?config)
-// config  在创建实例时可以不传入，通过update(config)方法设置也可以
+// config  在创建实例时可以不传入，通过addMenu(config)方法设置也可以
 ```
 
 #### 配置：
@@ -28,7 +28,7 @@ config = {
 ```
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
-update(config)                                  // 更新配置
+addMenu(config)                                 // 添加菜单
 dispose()                                       // 销毁
 ```
 
