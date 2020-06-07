@@ -20,7 +20,7 @@
                       height: 100%;
                     "
                   >
-                    niasdfnasdf
+                    
                   </div>
                 </div>
                 <div class="r-content"></div>
@@ -43,19 +43,27 @@
    <script>
     let id = "rgrid";
 
-    styleopts = {
-      contrl_size: 14,
-      splitline_size: 1,
-      splitline_color: "#aaa",
-      border: "2px solid #aaa",
-      min_size: 50,
+    options = {
+      isDraggable: true, //  是否开启拖拽
+      minSize: 10, //  拖动最小间隙
+      isPercent: true, //  宽高为百分比
+      ctrlElsize: 20, //  控制器大小
+      lineColor: "#000", //  分割线颜色
+      lineSize: 1, //  分割线大小
+      creatLine: true, //  是否创建分割线
+      draggableClassName: "draggable", //  拖拽样式名称
+      rootDomBorder: "1px solid #000", //  根节点边框
+      rowClassname: "r-row", //  行样式名称
+      columnClassname: "r-col", //  列样式名称
+      contentClassname: "r-content", //  单元格样式名称
     };
+     
     var r = new FrameContainer();
-    r.initial(id,"row",null,styleopts);
+    r.init(id,options);
 
     // 测试事件
-    r.onDraging(function (a, b) {
-      console.log(a, b);
+    r.onDraging(function (e) {
+      console.log(e);
     });
     r.onAddRow = function (e) {
       console.log(e);
@@ -64,17 +72,6 @@
       console.log(e);
     };
 
-    x = 1;
-    function a() {
-      let p = document.createElement("p");
-      p.innerText = `${x}a`;
-      x++;
-      return p;
-    }
 
-    // r.addRow(document.getElementById("hha"), a());
-    // r.addRow(document.getElementById("hha"), a());
-    // r.addRow(document.getElementById("hha"), a());
-    // r.addRow(document.getElementById("hha"), a());
   </script>
 </html>
