@@ -39,6 +39,7 @@ function genControlerByEl(setupEl, dirction, opts) {
   if (
     !setupEl.previousElementSibling ||
     setupEl.getElementsByClassName(draggableClassName).length > 0
+
   ) {
     return null;
   }
@@ -535,7 +536,7 @@ class BaseContainer {
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
  */
-export default class FrameContainer extends BaseContainer {
+class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -602,6 +603,35 @@ export default class FrameContainer extends BaseContainer {
   }
 
   /**
+   * 查找可用容器contentEl
+   * @param dom
+   * @returns contentEl
+   */
+  findParentContentEl(dom) {
+    // 查找可用容器,无可用容器时自动创建contentEl
+    if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+      var contentEl = null;
+      var _is_go = true;
+      if (document.getElementById(this.ID) === dom) {
+        contentEl = this.setInitMode("row", document.getElementById(this.ID));
+        _is_go = false;
+      }
+      while (_is_go) {
+        dom = dom.parentElement;
+        if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+          _is_go = false;
+          contentEl = dom;
+        }
+        if (dom.id === this.ID) {
+          _is_go = false;
+          contentEl = this.setInitMode("row", document.getElementById(this.ID));
+        }
+      }
+    }
+    return contentEl;
+  }
+
+  /**
    * 添加行
    * @param dom
    * @param insertPosition   插入的位置 默认值 "bottom" ["top"(置顶) | "botoom"（置底） | "before"（dom元素的前面） | "after" （dom元素的后面）]
@@ -612,22 +642,9 @@ export default class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-      var _is_go = true;
-      if (document.getElementById(this.ID) === dom) {
-        dom = this.setInitMode("row", document.getElementById(this.ID));
-        _is_go = false;
-      }
-      while (_is_go) {
-        dom = dom.parentElement;
-        if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-          _is_go = false;
-        }
-        if (dom.id === this.ID) {
-          _is_go = false;
-          dom = this.setInitMode("row", document.getElementById(this.ID));
-        }
-      }
+    dom = this.findParentContentEl(dom);
+    if (!dom) {
+      throw new Error("<FrameContainer:addRow> must be init!");
     }
 
     // 2.初始化结构
@@ -724,22 +741,9 @@ export default class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-      var _is_go = true;
-      if (document.getElementById(this.ID) === dom) {
-        dom = this.setInitMode("row", document.getElementById(this.ID));
-        _is_go = false;
-      }
-      while (_is_go) {
-        dom = dom.parentElement;
-        if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-          _is_go = false;
-        }
-        if (dom.id === this.ID) {
-          _is_go = false;
-          dom = this.setInitMode("col", document.getElementById(this.ID));
-        }
-      }
+    dom = this.findParentContentEl(dom);
+    if (!dom) {
+      throw new Error("<FrameContainer:addRow> must be init!");
     }
 
     // 2.初始化结构
@@ -827,35 +831,87 @@ export default class FrameContainer extends BaseContainer {
   }
 
   insertWindowTop(dom) {
-    dom = this.addRow(dom, "before")[1];
+    const arr = this.addRow(dom, "before");
     // 设置回调事件
     typeof this.onAddWindow === "function"
-      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      ? this.onAddWindow({
+          _event: "addWindow",
+          aEl: {
+            dom: arr[0],
+            width: arr[0].offsetWidth,
+            height: arr[0].offsetHeight,
+          },
+          bEl: {
+            dom: arr[1],
+            width: arr[1].offsetWidth,
+            height: arr[1].offsetHeight,
+          },
+        })
       : null;
+    return arr;
   }
   insertWindowBottom(dom) {
-    dom = this.addRow(dom, "after")[1];
+    const arr = this.addRow(dom, "after");
 
     // 设置回调事件
     typeof this.onAddWindow === "function"
-      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      ? this.onAddWindow({
+          _event: "addWindow",
+          aEl: {
+            dom: arr[1],
+            width: arr[1].offsetWidth,
+            height: arr[1].offsetHeight,
+          },
+          bEl: {
+            dom: arr[0],
+            width: arr[0].offsetWidth,
+            height: arr[0].offsetHeight,
+          },
+        })
       : null;
+    return arr;
   }
   insertWindowLeft(dom) {
-    dom = this.addColumn(dom, "before")[1];
+    const arr = this.addColumn(dom, "before");
 
     // 设置回调事件
     typeof this.onAddWindow === "function"
-      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      ? this.onAddWindow({
+          _event: "addWindow",
+          aEl: {
+            dom: arr[0],
+            width: arr[0].offsetWidth,
+            height: arr[0].offsetHeight,
+          },
+          bEl: {
+            dom: arr[1],
+            width: arr[1].offsetWidth,
+            height: arr[1].offsetHeight,
+          },
+        })
       : null;
+    return arr;
   }
   insertWindowRight(dom) {
-    dom = this.addColumn(dom, "after")[1];
+    const arr = this.addColumn(dom, "after");
 
     // 设置回调事件
     typeof this.onAddWindow === "function"
-      ? this.onAddWindow({ _event: "addWindow", dom: dom })
+      ? this.onAddWindow({
+          _event: "addWindow",
+          aEl: {
+            dom: arr[1],
+            width: arr[1].offsetWidth,
+            height: arr[1].offsetHeight,
+          },
+          bEl: {
+            dom: arr[0],
+            width: arr[0].offsetWidth,
+            height: arr[0].offsetHeight,
+          },
+        })
       : null;
+    return arr;
   }
 
   _createContentDom(size, dirction) {
