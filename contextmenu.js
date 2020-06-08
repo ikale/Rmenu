@@ -1,3 +1,56 @@
+// 在全局保存,使用右键的dom元素
+var BINDCONTAINERS = [];
+// 添加remove方法
+BINDCONTAINERS.__proto__.remove = function(val) {
+  var index = this.indexOf(val);
+  if (index > -1) {
+    this.splice(index, 1);
+  }
+};
+
+function setContraierContextmenu() {
+  document.removeEventListener("contextmenu", handleEvent);
+  document.removeEventListener("click", handleEvent);
+  document.addEventListener("contextmenu", handleEvent);
+  document.addEventListener("click", handleEvent);
+  function handleEvent(e) {
+    switch (e.type) {
+      case "contextmenu":
+        for (const dom of BINDCONTAINERS) {
+          const menu = dom.rmenu;
+          if (e.path.indexOf(dom) > -1) {
+            console.log("右键菜单", e);
+            e.preventDefault ? (e.returnValue = false) : "";
+            for (const el of e.path) {
+              if (el.bid) {
+                menu.activeBid = el.bid;
+                menu.activeDom = menu.isbind_containers[el.bid];
+                break;
+              }
+            }
+
+            menu.targetEl = e.path[0];
+            menu.show(e);
+          } else {
+            menu.hide();
+          }
+        }
+        break;
+      case "click":
+        for (const dom of BINDCONTAINERS) {
+          const menu = dom.rmenu;
+          // rmenuId
+          if (e.path.indexOf(document.getElementById(dom.rmenuId)) === -1) {
+            menu.hide();
+          }
+        }
+        break;
+    }
+  }
+}
+
+setContraierContextmenu();
+
 /**
  * 获取dom坐标
  * @param obj
@@ -21,15 +74,12 @@ function getXY(obj) {
   };
 }
 
-class Contextmenu {
+export default class Contextmenu {
   constructor(nodeConfigs) {
     this._stopRun = false;
     this._inited = false;
     this.id = "Rmeun_" + Math.random() * 100000;
-
     this._bid = 1;
-    this.x = 0;
-    this.y = 0;
     this.display = false;
     this.isbind_containers = {};
 
@@ -125,6 +175,7 @@ class Contextmenu {
           }
 
           const targetEl = el.lastChild;
+          // console.log("目标", targetEl);
           if (this.ischangeY) {
             // console.log("更改弹出方式，向上弹出");
             targetEl.style.top =
@@ -142,11 +193,22 @@ class Contextmenu {
             targetEl.style.left = targetEl.offsetWidth + "px";
           }
 
-          const wucha =
-            getXY(targetEl.lastChild).y - this.activeDom.clientHeight;
-          if (wucha > 0) {
-            // console.log("调整",wucha)
-            targetEl.style.top = -wucha + "px";
+          const thisParent = targetEl.parentElement;
+          const thisChildUL = targetEl.parentElement.getElementsByClassName(
+            "KR-pane"
+          )[0];
+          const displayY = document.body.offsetHeight;
+
+          if (thisChildUL) {
+            // console.log("更改弹出方式，向上弹出");
+            const wucha =
+              getXY(thisParent).y + thisChildUL.offsetHeight - displayY;
+            // console.log("误差",wucha);
+            if (wucha > 0) {
+              targetEl.style.top = -wucha + "px";
+            } else {
+              targetEl.style.top = 0;
+            }
           }
         };
 
@@ -212,31 +274,36 @@ class Contextmenu {
     return false;
   }
 
-  show(x, y) {
+  show(e) {
     // 初始化检查
-    !this._inited ? this.__init() : "";
-    this.x = x;
-    this.y = y;
-    this.display = true;
 
+    !this._inited ? this.__init() : "";
+    const x = e.pageX;
+    const y = e.pageY;
+
+    this.display = true;
     this.dom.style.display = "block";
-    this.dom.style.top = y + "px";
-    this.dom.style.left = x + "px";
+    this.dom.style.top = e.pageY + 1 + "px";
+    this.dom.style.left = e.pageX + 1 + "px";
 
     this.ischangeX = false;
     this.ischangeY = false;
-    const targetEl = this.dom.lastChild.lastChild;
+    const targetEl = this.dom.lastChild;
 
-    if (getXY(targetEl).y > this.activeDom.clientHeight) {
-      // console.log("1111111111111更改弹出方式，向上弹出");
-      this.ischangeY = true;
-      this.dom.style.top = y - this.dom.lastChild.clientHeight + "px";
+    const displayX = document.body.offsetWidth;
+    const displayY = document.body.offsetHeight;
+
+    if (x + targetEl.offsetWidth >= displayX) {
+      console.log("1111333311更改弹出方式，向左弹出");
+      this.ischangeX = true;
+      this.dom.style.left = x - this.dom.lastChild.clientWidth + "px";
     }
 
-    if (getXY(targetEl).x + targetEl.clientWidth > this.activeDom.clientWidth) {
-      // console.log("1111111111更改弹出方式，向左弹出");
-      this.dom.style.left = x - this.dom.lastChild.clientWidth + "px";
-      this.ischangeX = true;
+    console.log(y + targetEl.offsetHeight, displayY);
+    if (y + targetEl.offsetHeight >= displayY) {
+      console.log("更改弹出方式，向上弹出");
+      this.ischangeY = true;
+      this.dom.style.top = y - this.dom.lastChild.clientHeight + "px";
     }
   }
   hide() {
@@ -270,54 +337,30 @@ class Contextmenu {
 
   bind(ds) {
     //   绑定dom容器
-    let container = this._get_container_domnode(ds);
+    const container = this._get_container_domnode(ds);
     if (container.rmenu) {
       console.warn(`${ds} 已经绑定过了..`);
       return;
     }
 
-    let menu = this;
-    container.oncontextmenu = function(e) {
-      // 阻止默认事件
-      // console.log(e.path[0].bid);
-      e.preventDefault ? (e.returnValue = false) : "";
-      for (const el of e.path) {
-        if (el.bid) {
-          menu.activeBid = el.bid;
-          menu.activeDom = menu.isbind_containers[el.bid];
-          break;
-        }
-      }
-      menu.targetEl = e.path[0];
-      const targetX = e.pageX + 2;
-      const targetY = e.pageY + 2;
-      menu.show(targetX, targetY);
-    };
+    BINDCONTAINERS.push(container); //添加到全局
 
-    container.onclick = function(e) {
-      if (
-        menu.display === true &&
-        (e.clientX < menu.x ||
-          e.clientX > menu.x + menu.dom.offsetWidth ||
-          e.clientY < menu.y ||
-          e.clientY > menu.y + menu.dom.offsetHeight)
-      ) {
-        // console.log("菜单关闭");
-        menu.hide();
-      }
-    };
     // 标识dom容器已经绑定
     container.rmenu = this;
     container.bid = "bid_" + this._bid;
+    container.rmenuId = this.id;
     this.isbind_containers[container.bid] = container;
     this._bid++;
   }
 
   unbind(ds) {
     // 解除绑定
-    let container = this._get_container_domnode(ds);
+    const container = this._get_container_domnode(ds);
+    BINDCONTAINERS.remove(container); //从全局删除
+
     if (container.rmenu) {
       container.rmenu = null;
+      container.rmenuId = null;
       delete this.isbind_containers[container.bid];
       container.oncontextmenu = function(e) {
         e.preventDefault;
