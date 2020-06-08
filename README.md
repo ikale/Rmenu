@@ -117,26 +117,38 @@ insertWindowRight(dom)
 ###### 拖动: onDraging((e)=>{})
  ```
  onDraging((e)=>{})
- 回调参数：e: {
-                    _event: "draging",
-                    aEl: {
-                              dom: aEl,
-                              width: aEl.offsetWidth,
-                              height: aEl.offsetHeight,
-                    },
-                    bEl: {
-                              dom: bEl,
-                              width: bEl.offsetWidth,
-                              height: bEl.offsetHeight,
-                    },
-          }
+回调参数：e: {
+          _event: "draging",
+          aEl: {
+                    dom: aEl,
+                    width: aEl.offsetWidth,
+                    height: aEl.offsetHeight,
+          },
+          bEl: {
+                    dom: bEl,
+                    width: bEl.offsetWidth,
+                    height: bEl.offsetHeight,
+          },
+}
   ```              
   
   
 ###### 添加窗口: onAddWindow = function(e){}
  ```
- onAddWindow = function(e){}
- 回调参数：e: { _event: "addWindow", dom: contentEl }
+ onAddWindow = function(e){} 
+回调参数：e: {
+          _event: "addWindow",
+          aEl: {
+                    dom: aEl,
+                    width: aEl.offsetWidth,
+                    height: aEl.offsetHeight,
+          },
+          bEl: {
+                    dom: bEl,
+                    width: bEl.offsetWidth,
+                    height: bEl.offsetHeight,
+          },
+}
  
  ```
  
