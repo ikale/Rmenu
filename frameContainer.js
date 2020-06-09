@@ -536,7 +536,7 @@ class BaseContainer {
  * Event 添加窗口 onAddWindow = function(e){}
  * Event 删除窗口 ondeleteWindow  = function(e){}
  */
-class FrameContainer extends BaseContainer {
+export default class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -876,16 +876,9 @@ class FrameContainer extends BaseContainer {
         typeof this.ondeleteWindow === "function"
           ? this.ondeleteWindow({
               _event: "deleteWindow",
-              aEl: {
-                dom: parentEl,
-                width: parentEl.offsetWidth,
-                height: parentEl.offsetHeight,
-              },
-              bEl: {
-                dom: parentEl,
-                width: parentEl.offsetWidth,
-                height: parentEl.offsetHeight,
-              },
+              dom: parentEl,
+              width: parentEl.offsetWidth,
+              height: parentEl.offsetHeight,
             })
           : "";
 
@@ -927,20 +920,13 @@ class FrameContainer extends BaseContainer {
     }
 
     typeof this.ondeleteWindow === "function"
-    ? this.ondeleteWindow({
-        _event: "deleteWindow",
-        aEl: {
-          dom: aEl,
-          width: aEl.offsetWidth,
-          height: aEl.offsetHeight,
-        },
-        bEl: {
-          dom: bEl,
-          width: bEl.offsetWidth,
-          height: bEl.offsetHeight,
-        },
-      })
-    : "";
+      ? this.ondeleteWindow({
+          _event: "deleteWindow",
+          dom: nearEl,
+          width: nearEl.offsetWidth,
+          height: nearEl.offsetHeight,
+        })
+      : "";
 
     return true;
   }
