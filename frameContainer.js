@@ -607,7 +607,7 @@ class FrameContainer extends BaseContainer {
    * @param dom
    * @returns contentEl
    */
-  findParentContentEl(dom) {
+  getParentContentEl(dom) {
     // 查找可用容器,无可用容器时自动创建contentEl
     var contentEl = dom
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
@@ -643,7 +643,7 @@ class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.findParentContentEl(dom);
+    dom = this.getParentContentEl(dom);
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
@@ -742,7 +742,7 @@ class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.findParentContentEl(dom);
+    dom = this.getParentContentEl(dom);
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
