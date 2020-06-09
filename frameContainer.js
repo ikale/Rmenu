@@ -609,8 +609,9 @@ class FrameContainer extends BaseContainer {
    */
   findParentContentEl(dom) {
     // 查找可用容器,无可用容器时自动创建contentEl
+    var contentEl = dom
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
-      var contentEl = null;
+      contentEl = null;
       var _is_go = true;
       if (document.getElementById(this.ID) === dom) {
         contentEl = this.setInitMode("row", document.getElementById(this.ID));
