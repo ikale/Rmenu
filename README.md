@@ -91,7 +91,14 @@ defaultOptions = {
 ```
 init(root_domId,?options)                         // 初始化
 getOptions()                                      // 获取配置信息
-getParentContentEl(dom)                           // 获取dom元素父级的contentEl容器,无可用容器时自动创建contentEl；返回值：contentEl
+```
+
+```
+getParentContentEl(dom,mode)  
+// dom 被向上搜索的dom元素
+// mode 默认值 "row"   
+// 获取dom元素父级的contentEl容器,无可用容器时自动创建mode模式的contentEl；
+// 返回值：contentEl
 ```
 
 ```
