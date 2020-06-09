@@ -39,7 +39,6 @@ function genControlerByEl(setupEl, dirction, opts) {
   if (
     !setupEl.previousElementSibling ||
     setupEl.getElementsByClassName(draggableClassName).length > 0
-
   ) {
     return null;
   }
@@ -535,8 +534,9 @@ class BaseContainer {
  * Event 添加行: onAddRow = function(e){}
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
+ * Event 删除窗口 ondeleteWindow  = function(e){}
  */
-export default class FrameContainer extends BaseContainer {
+class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -603,16 +603,16 @@ export default class FrameContainer extends BaseContainer {
   }
 
   /**
-   * 查找可用容器contentEl
+   * 获取可用容器contentEl
    * @param dom
    * @param mode | 默认 "row"  没找到contentEL时自动创建行模式
    * @returns contentEl
    */
-  getParentContentEl(dom,mode) {
-    // 查找可用容器,无可用容器时自动创建contentEl
-    
-    mode = mode || "row"
-    var contentEl = dom
+  getParentContentEl(dom, mode) {
+    // 获取可用容器,无可用容器时自动创建contentEl
+
+    mode = mode || "row";
+    var contentEl = dom;
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       contentEl = null;
       var _is_go = true;
@@ -647,7 +647,7 @@ export default class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.getParentContentEl(dom,"row");
+    dom = this.getParentContentEl(dom, "row");
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
@@ -746,7 +746,7 @@ export default class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.getParentContentEl(dom,"col");
+    dom = this.getParentContentEl(dom, "col");
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
@@ -835,11 +835,115 @@ export default class FrameContainer extends BaseContainer {
     return [newContentEl, thisContentEl];
   }
 
+  deleteWindow(dom) {
+    var _is_go = false;
+    var deleteContentEl = null;
+    if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+      deleteContentEl = dom;
+    } else {
+      _is_go = true;
+    }
+    if (dom.id === this.ID) {
+      _is_go = false;
+    }
+    // 向上查找
+    while (_is_go) {
+      dom = dom.parentElement;
+      if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
+        _is_go = false;
+        deleteContentEl = dom;
+      }
+      dom.id === this.ID ? (_is_go = false) : "";
+    }
+    if (!deleteContentEl) {
+      return false;
+    }
 
-  // deleteWindow(dom){
-    
+    var aEl, bEl, mode, nearEl, thissize;
+    var parentEl = deleteContentEl.parentElement;
 
-  // }
+    if (parentEl.children.length === 1) {
+      parentEl = parentEl.parentElement;
+      if (parentEl.id === this.ID) {
+        const chirldEl = Array.from(deleteContentEl.children);
+        for (const chirld of chirldEl) {
+          if (!hasClassName(chirld.className, this.draggableClassName)) {
+            parentEl.appendChild(chirld);
+          }
+        }
+        parentEl.removeChild(deleteContentEl.parentElement);
+
+        typeof this.ondeleteWindow === "function"
+          ? this.ondeleteWindow({
+              _event: "deleteWindow",
+              aEl: {
+                dom: parentEl,
+                width: parentEl.offsetWidth,
+                height: parentEl.offsetHeight,
+              },
+              bEl: {
+                dom: parentEl,
+                width: parentEl.offsetWidth,
+                height: parentEl.offsetHeight,
+              },
+            })
+          : "";
+
+        return false;
+      }
+      aEl = parentEl.previousElementSibling;
+      bEl = parentEl.nextElementSibling;
+      nearEl = aEl || bEl;
+
+      mode = hasClassName(nearEl.className, this.ClOUMN_CLASS_NAME)
+        ? "col"
+        : "row";
+      mode === "row"
+        ? (thissize = deleteContentEl.offsetHeight)
+        : (thissize = deleteContentEl.offsetWidth);
+      parentEl.parentElement.removeChild(parentEl);
+    } else {
+      aEl = deleteContentEl.previousElementSibling;
+      bEl = deleteContentEl.nextElementSibling;
+
+      nearEl = aEl || bEl;
+      mode = hasClassName(parentEl.className, this.ClOUMN_CLASS_NAME)
+        ? "col"
+        : "row";
+      mode === "row"
+        ? (thissize = deleteContentEl.offsetHeight)
+        : (thissize = deleteContentEl.offsetWidth);
+      parentEl.removeChild(deleteContentEl);
+    }
+
+    if (mode === "row") {
+      const nearSize = nearEl.offsetHeight;
+      nearEl.style.height =
+        ((thissize + nearSize) / nearEl.parentElement.offsetHeight) * 100 + "%";
+    } else {
+      const nearSize = nearEl.offsetWidth;
+      nearEl.style.width =
+        ((thissize + nearSize) / nearEl.parentElement.offsetWidth) * 100 + "%";
+    }
+
+    typeof this.ondeleteWindow === "function"
+    ? this.ondeleteWindow({
+        _event: "deleteWindow",
+        aEl: {
+          dom: aEl,
+          width: aEl.offsetWidth,
+          height: aEl.offsetHeight,
+        },
+        bEl: {
+          dom: bEl,
+          width: bEl.offsetWidth,
+          height: bEl.offsetHeight,
+        },
+      })
+    : "";
+
+    return true;
+  }
 
   insertWindowTop(dom) {
     const arr = this.addRow(dom, "before");
