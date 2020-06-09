@@ -74,7 +74,7 @@ function getXY(obj) {
   };
 }
 
-export default class Contextmenu {
+class Contextmenu {
   constructor(nodeConfigs) {
     this._stopRun = false;
     this._inited = false;
@@ -159,8 +159,8 @@ export default class Contextmenu {
         d.init_sub = false;
         d.onmouseover = (e) => {
           let el = e.srcElement.tagName === "LI" ? e.path[0] : e.path[1];
-          el.className = "choose";
-
+          el.className = "choose";          
+         
           // 鼠标悬停初始化创建节点
           if (!d.init_sub && d.has_sub_dom) {
             let _d = this._creat_dom(el.dom_info);
