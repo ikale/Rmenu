@@ -91,6 +91,7 @@ defaultOptions = {
 ```
 init(root_domId,?options)                         // 初始化
 getOptions()                                      // 获取配置信息
+getParentContentEl(dom)                           // 获取dom元素父级的contentEl容器,无可用容器时自动创建contentEl；返回值：contentEl
 ```
 
 ```
