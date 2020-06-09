@@ -536,7 +536,7 @@ class BaseContainer {
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
  */
-class FrameContainer extends BaseContainer {
+export default class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -605,18 +605,22 @@ class FrameContainer extends BaseContainer {
   /**
    * 查找可用容器contentEl
    * @param dom
+   * @param mode | 默认 "row"  没找到contentEL时自动创建行模式
    * @returns contentEl
    */
-  getParentContentEl(dom) {
+  getParentContentEl(dom,mode) {
     // 查找可用容器,无可用容器时自动创建contentEl
+    
+    mode = mode || "row"
     var contentEl = dom
     if (!hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
       contentEl = null;
       var _is_go = true;
       if (document.getElementById(this.ID) === dom) {
-        contentEl = this.setInitMode("row", document.getElementById(this.ID));
+        contentEl = this.setInitMode(mode, document.getElementById(this.ID));
         _is_go = false;
       }
+      // 向上查找
       while (_is_go) {
         dom = dom.parentElement;
         if (hasClassName(dom.className, this.CONTENT_CLASS_NAME)) {
@@ -625,7 +629,7 @@ class FrameContainer extends BaseContainer {
         }
         if (dom.id === this.ID) {
           _is_go = false;
-          contentEl = this.setInitMode("row", document.getElementById(this.ID));
+          contentEl = this.setInitMode(mode, document.getElementById(this.ID));
         }
       }
     }
@@ -643,7 +647,7 @@ class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.getParentContentEl(dom);
+    dom = this.getParentContentEl(dom,"row");
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
@@ -742,7 +746,7 @@ class FrameContainer extends BaseContainer {
     insertPosition = insertPosition || "bottom";
 
     // 1.查找目标contentEl
-    dom = this.getParentContentEl(dom);
+    dom = this.getParentContentEl(dom,"col");
     if (!dom) {
       throw new Error("<FrameContainer:addRow> must be init!");
     }
@@ -830,6 +834,12 @@ class FrameContainer extends BaseContainer {
       : null;
     return [newContentEl, thisContentEl];
   }
+
+
+  // deleteWindow(dom){
+    
+
+  // }
 
   insertWindowTop(dom) {
     const arr = this.addRow(dom, "before");
