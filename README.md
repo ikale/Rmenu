@@ -165,17 +165,10 @@ insertWindowRight(dom)
  onAddWindow = function(e){} 
 回调参数：e: {
           _event: "deleteWindow",
-          aEl: {
-                    dom: aEl,
-                    width: aEl.offsetWidth,
-                    height: aEl.offsetHeight,
-          },
-          bEl: {
-                    dom: bEl,
-                    width: bEl.offsetWidth,
-                    height: bEl.offsetHeight,
-          },
-}
+          dom: near_contentEl,
+          width: near_contentEl.offsetWidth,
+          height: near_contentEl.offsetHeight,
+          }
  
  ```
 
