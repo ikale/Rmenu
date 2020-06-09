@@ -28,7 +28,7 @@ nodeConfigs = {
 ```
 bind(domId)                                     // 绑定dom元素
 unbind(domId)                                   // 解除绑定
-addMenu(nodeConfigs)                            // 添加菜单
+addMenu(nodeConfigs,?position="bottom")         // 添加菜单  position 可选 "top"  | "bottom"   默认从底部追加"bottom"  
 dispose()                                       // 销毁
 ```
 
