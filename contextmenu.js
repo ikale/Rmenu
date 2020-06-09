@@ -74,7 +74,7 @@ function getXY(obj) {
   };
 }
 
-class Contextmenu {
+export default class Contextmenu {
   constructor(nodeConfigs) {
     this._stopRun = false;
     this._inited = false;
@@ -97,12 +97,22 @@ class Contextmenu {
     }
   }
 
-  addMenu(nodeConfigs) {
+  addMenu(nodeConfigs, position) {
+    position = position || "bottom";
+
     if (nodeConfigs instanceof Array || !typeof nodeConfigs === "object") {
       throw new Error("<Contextmenu :addMenu > This node configs is wrong!!");
     }
-    for (const key in nodeConfigs) {
-      this._configs[key] = nodeConfigs[key];
+    if (position === "bottom") {
+      for (const key in nodeConfigs) {
+        this._configs[key] = nodeConfigs[key];
+      }
+    }
+    if (position === "top") {
+      for (const key in this._configs) {
+        nodeConfigs[key] = this._configs[key]
+      }
+      this._configs = nodeConfigs
     }
     this.update(this._configs);
   }
@@ -159,8 +169,8 @@ class Contextmenu {
         d.init_sub = false;
         d.onmouseover = (e) => {
           let el = e.srcElement.tagName === "LI" ? e.path[0] : e.path[1];
-          el.className = "choose";          
-         
+          el.className = "choose";
+
           // 鼠标悬停初始化创建节点
           if (!d.init_sub && d.has_sub_dom) {
             let _d = this._creat_dom(el.dom_info);
