@@ -74,7 +74,7 @@ function getXY(obj) {
   };
 }
 
-export default class Contextmenu {
+class Contextmenu {
   constructor(nodeConfigs) {
     this._stopRun = false;
     this._inited = false;
