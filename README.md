@@ -160,6 +160,25 @@ insertWindowRight(dom)
  
  ```
  
+###### 删除窗口: ondeleteWindow = function(e){} 
+ ```
+ onAddWindow = function(e){} 
+回调参数：e: {
+          _event: "deleteWindow",
+          aEl: {
+                    dom: aEl,
+                    width: aEl.offsetWidth,
+                    height: aEl.offsetHeight,
+          },
+          bEl: {
+                    dom: bEl,
+                    width: bEl.offsetWidth,
+                    height: bEl.offsetHeight,
+          },
+}
+ 
+ ```
+
  
 ###### 添加行: onAddRow = function(e){}
  ```
