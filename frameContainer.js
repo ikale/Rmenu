@@ -535,6 +535,7 @@ class BaseContainer {
  * Event 添加列: onAddColumn = function(e){}
  * Event 添加窗口 onAddWindow = function(e){}
  * Event 删除窗口 ondeleteWindow  = function(e){}
+ * ondeleteWindowBefore
  */
 class FrameContainer extends BaseContainer {
   constructor() {
@@ -863,7 +864,7 @@ class FrameContainer extends BaseContainer {
         }
 
         typeof this.ondeleteWindowBefore === "function"
-        ? this.ondeleteWindow({
+        ? this.ondeleteWindowBefore({
             _event: "deleteWindowBefore",
             dom: deleteContentEl.parentElement,
           })
@@ -905,7 +906,7 @@ class FrameContainer extends BaseContainer {
         : (thissize = deleteContentEl.offsetWidth);
 
         typeof this.ondeleteWindowBefore === "function"
-        ? this.ondeleteWindow({
+        ? this.ondeleteWindowBefore({
             _event: "deleteWindowBefore",
             dom: deleteContentEl,
           })
