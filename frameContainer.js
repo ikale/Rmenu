@@ -536,7 +536,7 @@ class BaseContainer {
  * Event 添加窗口 onAddWindow = function(e){}
  * Event 删除窗口 ondeleteWindow  = function(e){}
  */
-export default class FrameContainer extends BaseContainer {
+class FrameContainer extends BaseContainer {
   constructor() {
     super();
   }
@@ -550,16 +550,6 @@ export default class FrameContainer extends BaseContainer {
     this.ID = root_domId;
     this.set_dom(options);
     this.inited = true;
-
-    const root_dom = document.getElementById(this.ID);
-    if (
-      root_dom.getElementsByClassName(this.ClOUMN_CLASS_NAME).length > 0 ||
-      root_dom.getElementsByClassName(this.ROW_CLASS_NAME).length > 0
-    ) {
-      this.isSetInitMode = true;
-    } else {
-      this.isSetInitMode = false;
-    }
   }
 
   /**
@@ -661,7 +651,7 @@ export default class FrameContainer extends BaseContainer {
 
     // ### 在列模式时，创建行框架 在添加content
     if (hasClassName(dom.parentElement.className, this.ClOUMN_CLASS_NAME)) {
-      console.log("添加行模式框架");
+      // console.log("添加行模式框架");
       dom = this.setInitMode("row", dom);
     }
 
@@ -673,7 +663,7 @@ export default class FrameContainer extends BaseContainer {
       content_el = this._createContentDom(size, "row");
       putNode instanceof Node ? content_el.appendChild(putNode) : "";
       parent_dom.appendChild(content_el);
-      console.log("直接添加行contentEl");
+      // console.log("直接添加行contentEl");
       this.addControler(content_el);
 
       thisContentEl = dom;
@@ -760,7 +750,7 @@ export default class FrameContainer extends BaseContainer {
 
     // ### 在行模式下，创建列框架 在添加content
     if (hasClassName(dom.parentElement.className, this.ROW_CLASS_NAME)) {
-      console.log("添加列模式框架");
+      // console.log("添加列模式框架");
       dom = this.setInitMode("col", dom);
     }
 
@@ -871,6 +861,14 @@ export default class FrameContainer extends BaseContainer {
             parentEl.appendChild(chirld);
           }
         }
+
+        typeof this.ondeleteWindowBefore === "function"
+        ? this.ondeleteWindow({
+            _event: "deleteWindowBefore",
+            dom: deleteContentEl.parentElement,
+          })
+        : "";
+
         parentEl.removeChild(deleteContentEl.parentElement);
 
         typeof this.ondeleteWindow === "function"
@@ -881,7 +879,6 @@ export default class FrameContainer extends BaseContainer {
               height: parentEl.offsetHeight,
             })
           : "";
-
         return false;
       }
       aEl = parentEl.previousElementSibling;
@@ -906,6 +903,13 @@ export default class FrameContainer extends BaseContainer {
       mode === "row"
         ? (thissize = deleteContentEl.offsetHeight)
         : (thissize = deleteContentEl.offsetWidth);
+
+        typeof this.ondeleteWindowBefore === "function"
+        ? this.ondeleteWindow({
+            _event: "deleteWindowBefore",
+            dom: deleteContentEl,
+          })
+        : "";
       parentEl.removeChild(deleteContentEl);
     }
 
