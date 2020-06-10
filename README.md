@@ -159,7 +159,14 @@ insertWindowRight(dom)
 }
  
  ```
- 
+###### 删除窗口之前 ondeleteWindowBefore= function(e){} 
+```
+回调参数：e: {
+          _event: "deleteWindowBefore",
+          dom: deleteContentEl,
+          }
+```
+
 ###### 删除窗口: ondeleteWindow = function(e){} 
  ```
  onAddWindow = function(e){} 
