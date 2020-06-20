@@ -126,7 +126,7 @@ insertWindowRight(dom)
  ```
  onDraging((e)=>{})
 回调参数：e: {
-          _event: "draging",
+          type: "draging",
           aEl: {
                     dom: aEl,
                     width: aEl.offsetWidth,
@@ -145,7 +145,7 @@ insertWindowRight(dom)
  ```
  onAddWindow = function(e){} 
 回调参数：e: {
-          _event: "addWindow",
+          type: "addWindow",
           aEl: {
                     dom: aEl,
                     width: aEl.offsetWidth,
@@ -162,7 +162,7 @@ insertWindowRight(dom)
 ###### 删除窗口之前 ondeleteWindowBefore= function(e){} 
 ```
 回调参数：e: {
-          _event: "deleteWindowBefore",
+          type: "deleteWindowBefore",
           dom: deleteContentEl,
           }
 ```
@@ -171,7 +171,7 @@ insertWindowRight(dom)
  ```
  onAddWindow = function(e){} 
 回调参数：e: {
-          _event: "deleteWindow",
+          type: "deleteWindow",
           dom: near_contentEl,
           width: near_contentEl.offsetWidth,
           height: near_contentEl.offsetHeight,
@@ -183,14 +183,14 @@ insertWindowRight(dom)
 ###### 添加行: onAddRow = function(e){}
  ```
  onAddRow = function(e){}
- 回调参数： e: { _event: "addRow", dom: newContentEl }
+ 回调参数： e: { type: "addRow", dom: newContentEl }
 
  ```
  
  ###### 添加列: onAddColumn = function(e){}
  ```
  onAddColumn = function(e){}
- 回调参数： e: { _event: "addColumn", dom: newContentEl }
+ 回调参数： e: { type: "addColumn", dom: newContentEl }
 
  ```
 
