@@ -212,7 +212,7 @@ function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
             // 触发拖拽回调
             typeof callback === "function"
               ? callback({
-                  _event: "draging",
+                  type: "draging",
                   aEl: {
                     dom: aEl,
                     width: aEl.offsetWidth,
@@ -242,7 +242,7 @@ function setControlerDrag(callback, minSize, isPercent, draggableClassName) {
           // 触发拖拽回调
           typeof callback === "function"
             ? callback({
-                _event: "draging",
+                type: "draging",
                 aEl: {
                   dom: aEl,
                   width: aEl.offsetWidth,
@@ -722,7 +722,7 @@ class FrameContainer extends BaseContainer {
 
     // 4.设置回调事件
     typeof this.onAddRow === "function"
-      ? this.onAddRow({ _event: "addRow", dom: newContentEl })
+      ? this.onAddRow({ type: "addRow", dom: newContentEl })
       : null;
     return [newContentEl, thisContentEl];
   }
@@ -821,7 +821,7 @@ class FrameContainer extends BaseContainer {
 
     // 4.设置回调事件
     typeof this.onAddColumn === "function"
-      ? this.onAddColumn({ _event: "addColumn", dom: newContentEl })
+      ? this.onAddColumn({ type: "addColumn", dom: newContentEl })
       : null;
     return [newContentEl, thisContentEl];
   }
@@ -865,7 +865,7 @@ class FrameContainer extends BaseContainer {
 
         typeof this.ondeleteWindowBefore === "function"
         ? this.ondeleteWindowBefore({
-            _event: "deleteWindowBefore",
+            type: "deleteWindowBefore",
             dom: deleteContentEl.parentElement,
           })
         : "";
@@ -874,7 +874,7 @@ class FrameContainer extends BaseContainer {
 
         typeof this.ondeleteWindow === "function"
           ? this.ondeleteWindow({
-              _event: "deleteWindow",
+              type: "deleteWindow",
               dom: parentEl,
               width: parentEl.offsetWidth,
               height: parentEl.offsetHeight,
@@ -907,7 +907,7 @@ class FrameContainer extends BaseContainer {
 
         typeof this.ondeleteWindowBefore === "function"
         ? this.ondeleteWindowBefore({
-            _event: "deleteWindowBefore",
+            type: "deleteWindowBefore",
             dom: deleteContentEl,
           })
         : "";
@@ -926,7 +926,7 @@ class FrameContainer extends BaseContainer {
 
     typeof this.ondeleteWindow === "function"
       ? this.ondeleteWindow({
-          _event: "deleteWindow",
+          type: "deleteWindow",
           dom: nearEl,
           width: nearEl.offsetWidth,
           height: nearEl.offsetHeight,
@@ -941,7 +941,7 @@ class FrameContainer extends BaseContainer {
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({
-          _event: "addWindow",
+          type: "addWindow",
           aEl: {
             dom: arr[0],
             width: arr[0].offsetWidth,
@@ -962,7 +962,7 @@ class FrameContainer extends BaseContainer {
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({
-          _event: "addWindow",
+          type: "addWindow",
           aEl: {
             dom: arr[1],
             width: arr[1].offsetWidth,
@@ -983,7 +983,7 @@ class FrameContainer extends BaseContainer {
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({
-          _event: "addWindow",
+          type: "addWindow",
           aEl: {
             dom: arr[0],
             width: arr[0].offsetWidth,
@@ -1004,7 +1004,7 @@ class FrameContainer extends BaseContainer {
     // 设置回调事件
     typeof this.onAddWindow === "function"
       ? this.onAddWindow({
-          _event: "addWindow",
+          type: "addWindow",
           aEl: {
             dom: arr[1],
             width: arr[1].offsetWidth,
